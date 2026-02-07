@@ -96,6 +96,29 @@
       </div>
     </section>
 
+    <!-- Модальное окно Истории -->
+<div id="history-modal" class="modal">
+  <div class="modal-content history-modal">
+    <div class="modal-header">
+      <h3>📜 История квестов</h3>
+      <div class="history-stats-summary" id="history-stats-summary">
+        <!-- Статистика будет обновляться через JS -->
+      </div>
+      <button class="close-btn" onclick="closeHistoryModal()">&times;</button>
+    </div>
+    <div class="modal-body history-body">
+      <div id="history-container">
+        <!-- История будет отображаться здесь -->
+      </div>
+    </div>
+    <div class="modal-footer history-footer">
+      <button class="btn btn-secondary" onclick="exportHistory()">📤 Экспорт истории</button>
+      <button class="btn btn-warning" onclick="clearHistory()">🗑️ Очистить историю</button>
+      <button class="btn btn-primary" onclick="closeHistoryModal()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
     <!-- Таймер -->
     <section class="timer-section">
       <div class="timer-card">
@@ -107,6 +130,7 @@
 
     <!-- Кнопки действий -->
     <div class="action-buttons">
+      <button class="btn btn-history" onclick="openHistoryModal()">📜 История</button>
       <button class="btn btn-export" onclick="exportData()">📤 Экспорт</button>
       <button class="btn btn-import" onclick="importData()">📥 Импорт</button>
       <button class="btn btn-reset" onclick="resetAllData()">🗑️ Сброс</button>

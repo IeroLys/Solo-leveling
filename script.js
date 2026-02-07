@@ -7,6 +7,7 @@ let userData = {
     willpower: { totalXP: 0 }
   },
   todos: [],
+  history: [],
   lastReset: new Date().toDateString()
 };
 
@@ -95,6 +96,7 @@ function loadUserData() {
           willpower: { totalXP: (parsed.stats?.willpower?.totalXP) || 0 }
         },
         todos,
+        history: parsed.history || [],
         lastReset: parsed.lastReset || new Date().toDateString()
       };
 
@@ -215,6 +217,18 @@ function toggleTodo(index) {
   } else {
     addXP(todo.xp, todo.statTypes);
     todo.completed = true;
+    // Добавляем запись в историю
+    userData.history.push({
+      id: Date.now(), // уникальный ID для возможного расширения
+      text: todo.text,
+      xp: todo.xp,
+      statTypes: [...todo.statTypes],
+      completedAt: new Date().toISOString()
+    });
+    // Ограничиваем историю последними 200 записями
+    if (userData.history.length > 200) {
+      userData.history = userData.history.slice(-200);
+    }
   }
   saveUserData();
   renderUI();
@@ -300,6 +314,150 @@ function deleteTodo(index) {
 function resetDailyTodos() {
   userData.todos = userData.todos.filter(todo => !todo.completed);
   saveUserData();
+}
+
+// === СИСТЕМА ИСТОРИИ ===
+function openHistoryModal() {
+  document.getElementById('history-modal').classList.add('active');
+  renderHistory();
+}
+
+function closeHistoryModal() {
+  document.getElementById('history-modal').classList.remove('active');
+}
+
+function clearHistory() {
+  if (confirm('⚠️ Очистить ВСЮ историю?\nЭто действие нельзя отменить. Все записи о выполненных квестах будут удалены.')) {
+    userData.history = [];
+    saveUserData();
+    renderHistory();
+    alert('✅ История успешно очищена!');
+  }
+}
+
+function renderHistory() {
+  const container = document.getElementById('history-container');
+  if (!container) return;
+  // Обновляем статистику в шапке
+  const totalEntries = userData.history.length;
+  const totalXP = userData.history.reduce((sum, entry) => sum + entry.xp, 0);
+  document.getElementById('history-stats-summary').innerHTML = `
+    <span>Всего выполнено: <strong>${totalEntries}</strong></span>
+    <span>Получено XP: <strong>${totalXP}</strong></span>
+  `;
+
+  if (userData.history.length === 0) {
+    container.innerHTML = `
+      <div class="empty-history">
+        <div class="empty-icon">📜</div>
+        <p>История пуста</p>
+        <small>Выполняйте квесты, чтобы видеть их здесь!</small>
+      </div>
+    `;
+    return;
+  }
+
+  // Группируем по датам (в формате ГГГГ-ММ-ДД для корректной сортировки)
+  const grouped = {};
+  userData.history.forEach(entry => {
+    const dateKey = entry.completedAt.split('T')[0]; // "2026-02-08"
+    if (!grouped[dateKey]) grouped[dateKey] = [];
+    grouped[dateKey].push(entry);
+  });
+
+  // Сортируем даты по убыванию (новые сверху)
+  const sortedDates = Object.keys(grouped).sort().reverse();
+  
+  let html = '';
+  const statIcons = { strength: '💪', career: '💸', willpower: '🔥' };
+  
+  sortedDates.forEach(dateKey => {
+    const dateObj = new Date(dateKey);
+    const displayDate = dateObj.toLocaleDateString('ru-RU', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    // Сортируем записи в дате по времени (новые сверху)
+    const entries = grouped[dateKey].sort((a, b) => 
+      new Date(b.completedAt) - new Date(a.completedAt)
+    );
+    
+    html += `<div class="history-date-group">
+      <h4 class="history-date-title">${displayDate}</h4>
+      <div class="history-entries">`;
+    
+    entries.forEach(entry => {
+      const time = new Date(entry.completedAt).toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      const statBadges = entry.statTypes.map(stat => 
+        `<span class="stat-badge ${stat}">${statIcons[stat] || stat.charAt(0).toUpperCase()}</span>`
+      ).join('');
+      
+      // Защита от XSS
+      const safeText = escapeHtml(entry.text);
+      
+      html += `
+        <div class="history-entry">
+          <div class="history-time">${time}</div>
+          <div class="history-content">
+            <div class="history-text">${safeText}</div>
+            <div class="history-meta">
+              ${statBadges}
+              <span class="xp-badge history-xp">${entry.xp} XP</span>
+            </div>
+          </div>
+        </div>`;
+    });
+    
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+// Защита от XSS
+function escapeHtml(unsafe) {
+  if (typeof unsafe !== 'string') return '';
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+// Экспорт истории в отдельный файл
+function exportHistory() {
+  if (userData.history.length === 0) {
+    alert('История пуста! Сначала выполните несколько квестов.');
+    return;
+  }
+  
+  const historyData = {
+    exportedAt: new Date().toISOString(),
+    totalEntries: userData.history.length,
+    entries: userData.history
+  };
+  
+  const dataStr = JSON.stringify(historyData, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `solo-leveling-history-${new Date().toISOString().slice(0,10)}.json`;
+  
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 100);
 }
 
 // === ТАЙМЕР ===
@@ -391,6 +549,7 @@ function resetAllData() {
       willpower: { totalXP: 0 }
     },
     todos: [],
+    history: [],
     lastReset: new Date().toDateString()
   };
   saveUserData();

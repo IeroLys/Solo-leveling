@@ -683,6 +683,178 @@ body {
   justify-content: flex-end;
 }
 
+/* === СТИЛИ ИСТОРИИ === */
+.btn-history {
+  background: linear-gradient(135deg, #ffaa00 0%, #ffcc00 100%);
+  color: #000;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-history:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 200, 0, 0.4);
+  background: linear-gradient(135deg, #ffcc00 0%, #ffe000 100%);
+}
+
+/* Модальное окно истории */
+.history-modal {
+  max-width: 520px;
+}
+
+.history-stats-summary {
+  display: flex;
+  gap: 15px;
+  background: rgba(0, 30, 50, 0.6);
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #00ccff;
+}
+
+.history-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 30px 15px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+
+.history-date-group {
+  margin-bottom: 22px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(0, 150, 200, 0.2);
+}
+
+.history-date-title {
+  color: #00ccff;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.25rem;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 180, 255, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-date-title::before {
+  content: "📅";
+}
+
+.history-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-entry {
+  background: rgba(15, 25, 40, 0.7);
+  border: 1px solid rgba(0, 150, 200, 0.2);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  gap: 12px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.history-entry::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background: linear-gradient(to bottom, #00aaff, #00ccff);
+}
+
+.history-entry:hover {
+  border-color: rgba(0, 180, 255, 0.4);
+  transform: translateX(3px);
+  background: rgba(20, 30, 45, 0.8);
+}
+
+.history-time {
+  font-family: 'Orbitron', sans-serif;
+  color: #00e5ff;
+  min-width: 55px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 30, 50, 0.7);
+  border-radius: 6px;
+  padding: 4px 6px;
+  flex-shrink: 0;
+}
+
+.history-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-text {
+  font-size: 0.98rem;
+  margin-bottom: 6px;
+  line-height: 1.4;
+  word-break: break-word;
+  color: #e0f7ff;
+}
+
+.history-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.history-xp {
+  background: linear-gradient(135deg, #ffcc00 0%, #ffaa00 100%);
+  color: #000;
+  font-weight: bold;
+}
+
+.history-footer {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #ffaa00 0%, #ff8800 100%);
+  color: #000;
+}
+
+.btn-warning:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(255, 150, 0, 0.4);
+}
+
+/* Адаптивность истории */
+@media (max-width: 480px) {
+  .history-modal { width: 95%; }
+  .history-time { min-width: 45px; font-size: 0.85rem; }
+  .history-date-title { font-size: 1.1rem; }
+  .history-stats-summary { flex-direction: column; gap: 4px; }
+}
+
 /* === АДАПТИВНОСТЬ === */
 @media (max-width: 420px) {
   .container { padding: 10px; padding-bottom: 50px; }
