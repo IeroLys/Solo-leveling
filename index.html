@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎮 Solo Leveling System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="background-overlay"></div>
+  <div class="container">
+    <!-- Заголовок системы -->
+    <header class="system-header">
+      <div class="system-title">
+        <h1><span class="system-icon">⚔️</span> Solo Leveling</h1>
+        <div class="system-subtitle">Player System</div>
+      </div>
+    </header>
+
+    <!-- Аватар -->
+    <div class="avatar-container">
+      <div class="avatar">
+        <span class="avatar-icon">P</span>
+      </div>
+    </div>
+
+    <!-- Уровень игрока -->
+    <div class="player-level">
+      <div class="level-badge">
+        <div class="level-rank">LVL</div>
+        <div class="level-number" id="level">1</div>
+      </div>
+      <div class="xp-bar-container">
+        <div class="xp-bar">
+          <div class="xp-fill" id="xp-progress"></div>
+        </div>
+        <div class="xp-text">
+          <span id="current-xp">0</span>/<span id="max-xp">100</span> XP
+        </div>
+      </div>
+    </div>
+
+    <!-- Статы -->
+    <section class="stats-section">
+      <h2 class="section-title">Stats</h2>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">💪</span>
+          <span class="stat-name">Strength</span>
+          <span class="stat-level-number" id="strength-level">1</span>
+          <span class="stat-rank">E</span>
+        </div>
+        <div class="stat-xp-bar">
+          <div class="stat-xp-fill" id="strength-progress"></div>
+        </div>
+        <div class="stat-xp-text" id="strength-xp">0/100 XP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">💸</span>
+          <span class="stat-name">Career</span>
+          <span class="stat-level-number" id="career-level">1</span>
+          <span class="stat-rank">E</span>
+        </div>
+        <div class="stat-xp-bar">
+          <div class="stat-xp-fill" id="career-progress"></div>
+        </div>
+        <div class="stat-xp-text" id="career-xp">0/100 XP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-icon">🔥</span>
+          <span class="stat-name">Willpower</span>
+          <span class="stat-level-number" id="willpower-level">1</span>
+          <span class="stat-rank">E</span>
+        </div>
+        <div class="stat-xp-bar">
+          <div class="stat-xp-fill" id="willpower-progress"></div>
+        </div>
+        <div class="stat-xp-text" id="willpower-xp">0/100 XP</div>
+      </div>
+    </section>
+
+    <!-- Квесты -->
+    <section class="todo-section">
+      <div class="section-title">
+        📋 Daily Quests
+        <span class="quest-count" id="quest-count">0</span>
+      </div>
+      <div class="todo-list" id="todo-container"></div>
+      <div class="add-todo-btn" id="add-todo-btn">
+        <span class="plus-icon">+</span> Добавить квест
+      </div>
+    </section>
+
+    <!-- Таймер -->
+    <section class="timer-section">
+      <div class="timer-card">
+        <div class="timer-icon">⏰</div>
+        <div class="timer-label">До конца дня:</div>
+        <div class="timer-value" id="time-left">23:59:59</div>
+      </div>
+    </section>
+
+    <!-- Кнопки действий -->
+    <div class="action-buttons">
+      <button class="btn btn-export" onclick="exportData()">📤 Экспорт</button>
+      <button class="btn btn-import" onclick="importData()">📥 Импорт</button>
+      <button class="btn btn-reset" onclick="resetAllData()">🗑️ Сброс</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно -->
+  <div class="modal" id="edit-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Добавить квест</h3>
+        <button class="close-btn" onclick="closeEditModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="modal-input" id="edit-todo-text" placeholder="Описание задачи..." maxlength="100" />
+        <div class="modal-row">
+          <div class="modal-input-group">
+            <label>XP:</label>
+            <input type="number" class="modal-input-small" id="edit-todo-xp" min="1" value="10" />
+          </div>
+          <div class="modal-input-group">
+            <label>Статы:</label>
+            <div class="stat-selector-modal">
+              <label class="stat-option">
+                <input type="checkbox" class="edit-stat-cb" value="strength" />
+                <span>💪</span>
+              </label>
+              <label class="stat-option">
+                <input type="checkbox" class="edit-stat-cb" value="career" />
+                <span>💸</span>
+              </label>
+              <label class="stat-option">
+                <input type="checkbox" class="edit-stat-cb" value="willpower" />
+                <span>🔥</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-edit-btn">Отмена</button>
+        <button class="btn btn-primary" id="save-edit-btn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="import-file" accept=".json" style="display:none;" onchange="handleFileSelect(event)" />
+
+  <script src="script.js"></script>
+</body>
+</html>
