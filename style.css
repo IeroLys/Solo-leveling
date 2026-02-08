@@ -847,6 +847,126 @@ body {
   box-shadow: 0 4px 15px rgba(255, 150, 0, 0.4);
 }
 
+/* === ВЫБОР СЛОЖНОСТИ === */
+.difficulty-selector {
+  margin-top: 8px;
+}
+.difficulty-ruler {
+  position: relative;
+  height: 40px;
+  margin: 12px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+  cursor: pointer;
+}
+.ruler-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 150, 200, 0.3);
+  border-radius: 2px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+.ruler-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 20%;
+  background: linear-gradient(90deg, #00aaff, #00ccff);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  z-index: 2;
+}
+.ruler-marker {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 100, 150, 0.4);
+  border: 2px solid rgba(0, 180, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  z-index: 3;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ruler-marker:hover {
+  transform: scale(1.15);
+  background: rgba(0, 150, 220, 0.6);
+  border-color: #00aaff;
+  color: white;
+}
+.ruler-marker.active {
+  background: linear-gradient(135deg, #00aaff 0%, #00ccff 100%);
+  border-color: white;
+  color: white;
+  box-shadow: 0 0 12px rgba(0, 180, 255, 0.7);
+  transform: scale(1.25);
+}
+.ruler-thumb {
+  position: absolute;
+  top: 50%;
+  left: calc(80% - 14px);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #00aaff;
+  transform: translateY(-50%);
+  box-shadow: 0 0 10px rgba(0, 200, 255, 0.8);
+  z-index: 4;
+  pointer-events: none;
+  transition: left 0.3s ease;
+}
+.difficulty-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.68rem;
+  opacity: 0.85;
+  color: #00b8cc;
+  letter-spacing: -0.3px;
+}
+.difficulty-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(0, 30, 50, 0.6);
+  border-radius: 8px;
+  font-weight: 600;
+}
+.preview-label {
+  color: #00ccff;
+  font-size: 1.05rem;
+}
+.preview-xp {
+  background: linear-gradient(135deg, #00aaff 0%, #00ccff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+@keyframes markerPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 180, 255, 0); }
+  50% { transform: scale(1.3); box-shadow: 0 0 0 8px rgba(0, 180, 255, 0.3); }
+}
+.marker-select {
+  animation: markerPulse 0.4s ease;
+}
+
 /* Адаптивность истории */
 @media (max-width: 480px) {
   .history-modal { width: 95%; }
@@ -871,4 +991,7 @@ body {
   .modal-content { width: 95%; border-radius: 14px; }
   .modal-row { flex-direction: column; gap: 8px; }
   .modal-input-group { min-width: 100%; }
+  .difficulty-labels { font-size: 0.62rem; flex-wrap: wrap; gap: 2px; }
+  .difficulty-preview { flex-direction: column; gap: 4px; text-align: center; }
+  .preview-xp { font-size: 1.1rem; }
 }

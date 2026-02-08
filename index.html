@@ -1,184 +1,152 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎮 Solo Leveling System</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="background-overlay"></div>
   <div class="container">
-    <!-- Заголовок системы -->
-    <header class="system-header">
+    <div class="system-header">
       <div class="system-title">
-        <h1><span class="system-icon">⚔️</span> Solo Leveling</h1>
+        <h1>⚔️ Solo Leveling</h1>
         <div class="system-subtitle">Player System</div>
       </div>
-    </header>
-
-    <!-- Аватар -->
-    <div class="avatar-container">
-      <div class="avatar">
-        <span class="avatar-icon">P</span>
-      </div>
     </div>
-
-    <!-- Уровень игрока -->
+    
+    <div class="avatar-container">
+      <div class="avatar"><span class="avatar-icon">P</span></div>
+    </div>
+    
     <div class="player-level">
       <div class="level-badge">
-        <div class="level-rank">LVL</div>
-        <div class="level-number" id="level">1</div>
+        <span class="level-rank">LVL</span>
+        <span id="level" class="level-number">1</span>
       </div>
-      <div class="xp-bar-container">
-        <div class="xp-bar">
-          <div class="xp-fill" id="xp-progress"></div>
-        </div>
-        <div class="xp-text">
-          <span id="current-xp">0</span>/<span id="max-xp">100</span> XP
-        </div>
-      </div>
+      <div class="xp-bar"><div id="xp-progress" class="xp-fill"></div></div>
+      <div class="xp-text"><span id="current-xp">0</span>/<span id="max-xp">100</span> XP</div>
     </div>
-
-    <!-- Статы -->
-    <section class="stats-section">
+    
+    <div class="stats-section">
       <h2 class="section-title">Stats</h2>
       <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-icon">💪</span>
-          <span class="stat-name">Strength</span>
-          <span class="stat-level-number" id="strength-level">1</span>
-          <span class="stat-rank">E</span>
+        <div class="stat-header"><span class="stat-icon">💪</span><span class="stat-name">Strength</span>
+        <div class="stat-level"><span id="strength-level" class="stat-level-number">1</span></div>
         </div>
-        <div class="stat-xp-bar">
-          <div class="stat-xp-fill" id="strength-progress"></div>
-        </div>
+        <div class="stat-xp-bar"><div id="strength-progress" class="stat-xp-fill"></div></div>
         <div class="stat-xp-text" id="strength-xp">0/100 XP</div>
       </div>
       <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-icon">💸</span>
-          <span class="stat-name">Career</span>
-          <span class="stat-level-number" id="career-level">1</span>
-          <span class="stat-rank">E</span>
+        <div class="stat-header"><span class="stat-icon">💸</span><span class="stat-name">Career</span>
+        <div class="stat-level"><span id="career-level" class="stat-level-number">1</span></div>
         </div>
-        <div class="stat-xp-bar">
-          <div class="stat-xp-fill" id="career-progress"></div>
-        </div>
+        <div class="stat-xp-bar"><div id="career-progress" class="stat-xp-fill"></div></div>
         <div class="stat-xp-text" id="career-xp">0/100 XP</div>
       </div>
       <div class="stat-card">
-        <div class="stat-header">
-          <span class="stat-icon">🔥</span>
-          <span class="stat-name">Willpower</span>
-          <span class="stat-level-number" id="willpower-level">1</span>
-          <span class="stat-rank">E</span>
+        <div class="stat-header"><span class="stat-icon">🔥</span><span class="stat-name">Willpower</span>
+        <div class="stat-level"><span id="willpower-level" class="stat-level-number">1</span></div>
         </div>
-        <div class="stat-xp-bar">
-          <div class="stat-xp-fill" id="willpower-progress"></div>
-        </div>
+        <div class="stat-xp-bar"><div id="willpower-progress" class="stat-xp-fill"></div></div>
         <div class="stat-xp-text" id="willpower-xp">0/100 XP</div>
       </div>
-    </section>
-
-    <!-- Квесты -->
-    <section class="todo-section">
-      <div class="section-title">
-        📋 Daily Quests
-        <span class="quest-count" id="quest-count">0</span>
-      </div>
-      <div class="todo-list" id="todo-container"></div>
-      <div class="add-todo-btn" id="add-todo-btn">
-        <span class="plus-icon">+</span> Добавить квест
-      </div>
-    </section>
-
-    <!-- Модальное окно Истории -->
-<div id="history-modal" class="modal">
-  <div class="modal-content history-modal">
-    <div class="modal-header">
-      <h3>📜 История квестов</h3>
-      <div class="history-stats-summary" id="history-stats-summary">
-        <!-- Статистика будет обновляться через JS -->
-      </div>
-      <button class="close-btn" onclick="closeHistoryModal()">&times;</button>
     </div>
-    <div class="modal-body history-body">
-      <div id="history-container">
-        <!-- История будет отображаться здесь -->
-      </div>
+    
+    <div class="todo-section">
+      <h2 class="section-title">📋 Daily Quests <span id="quest-count" class="quest-count">0</span></h2>
+      <div id="todo-container"></div>
+      <div id="add-todo-btn" class="add-todo-btn"><span class="plus-icon">+</span> Добавить квест</div>
     </div>
-    <div class="modal-footer history-footer">
-      <button class="btn btn-secondary" onclick="exportHistory()">📤 Экспорт истории</button>
-      <button class="btn btn-warning" onclick="clearHistory()">🗑️ Очистить историю</button>
-      <button class="btn btn-primary" onclick="closeHistoryModal()">Закрыть</button>
-    </div>
-  </div>
-</div>
-
-    <!-- Таймер -->
-    <section class="timer-section">
+    
+    <div class="timer-section">
       <div class="timer-card">
         <div class="timer-icon">⏰</div>
         <div class="timer-label">До конца дня:</div>
-        <div class="timer-value" id="time-left">23:59:59</div>
+        <div id="time-left" class="timer-value">23:59:59</div>
       </div>
-    </section>
-
-    <!-- Кнопки действий -->
+    </div>
+    
     <div class="action-buttons">
-      <button class="btn btn-history" onclick="openHistoryModal()">📜 История</button>
+      <button class="btn btn-history" onclick="openHistoryModal()">📜 История квестов</button>
       <button class="btn btn-export" onclick="exportData()">📤 Экспорт</button>
-      <button class="btn btn-import" onclick="importData()">📥 Импорт</button>
+      <button class="btn btn-secondary" onclick="importData()">📥 Импорт</button>
       <button class="btn btn-reset" onclick="resetAllData()">🗑️ Сброс</button>
     </div>
   </div>
 
-  <!-- Модальное окно -->
-  <div class="modal" id="edit-modal">
+  <!-- МОДАЛЬНОЕ ОКНО (КРИТИЧНО!) -->
+  <div id="edit-modal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="modal-title">Добавить квест</h3>
         <button class="close-btn" onclick="closeEditModal()">×</button>
       </div>
       <div class="modal-body">
-        <input type="text" class="modal-input" id="edit-todo-text" placeholder="Описание задачи..." maxlength="100" />
-        <div class="modal-row">
-          <div class="modal-input-group">
-            <label>XP:</label>
-            <input type="number" class="modal-input-small" id="edit-todo-xp" min="1" value="10" />
+        <div class="modal-input-group">
+          <label for="edit-todo-text">Текст квеста:</label>
+          <input type="text" id="edit-todo-text" class="modal-input" placeholder="Например: Пробежать 5 км">
+        </div>
+        
+        <!-- ВЫБОР СЛОЖНОСТИ -->
+        <div class="modal-input-group difficulty-selector">
+          <label>Сложность квеста:</label>
+          <div class="difficulty-ruler">
+            <div class="ruler-track"><div class="ruler-progress" id="ruler-progress"></div></div>
+            <div class="ruler-marker" data-level="1" title="Очень лёгкая (30 XP)">1</div>
+            <div class="ruler-marker" data-level="2" title="Лёгкая (50 XP)">2</div>
+            <div class="ruler-marker" data-level="3" title="Средняя (80 XP)">3</div>
+            <div class="ruler-marker" data-level="4" title="Выше среднего (130 XP)">4</div>
+            <div class="ruler-marker" data-level="5" title="Сложная (220 XP)">5</div>
+            <div class="ruler-thumb" id="ruler-thumb"></div>
           </div>
-          <div class="modal-input-group">
-            <label>Статы:</label>
-            <div class="stat-selector-modal">
-              <label class="stat-option">
-                <input type="checkbox" class="edit-stat-cb" value="strength" />
-                <span>💪</span>
-              </label>
-              <label class="stat-option">
-                <input type="checkbox" class="edit-stat-cb" value="career" />
-                <span>💸</span>
-              </label>
-              <label class="stat-option">
-                <input type="checkbox" class="edit-stat-cb" value="willpower" />
-                <span>🔥</span>
-              </label>
-            </div>
+          <div class="difficulty-labels">
+            <span>Оч. лёгкая</span><span>Лёгкая</span><span>Средняя</span><span>Выше сред.</span><span>Сложная</span>
+          </div>
+          <div class="difficulty-preview" id="difficulty-preview">
+            <span class="preview-label">Средняя</span>
+            <span class="preview-xp">80 XP</span>
+          </div>
+          <input type="hidden" id="edit-todo-xp" value="80">
+        </div>
+        
+        <div class="modal-input-group">
+          <label>Статы:</label>
+          <div class="stat-selector-modal">
+            <label class="stat-option"><input type="checkbox" class="edit-stat-cb" value="strength"> 💪</label>
+            <label class="stat-option"><input type="checkbox" class="edit-stat-cb" value="career"> 💸</label>
+            <label class="stat-option"><input type="checkbox" class="edit-stat-cb" value="willpower"> 🔥</label>
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" id="cancel-edit-btn">Отмена</button>
-        <button class="btn btn-primary" id="save-edit-btn">Сохранить</button>
+        <button id="cancel-edit-btn" class="btn btn-secondary">Отмена</button>
+        <button id="save-edit-btn" class="btn btn-primary">Сохранить</button>
       </div>
     </div>
   </div>
 
-  <input type="file" id="import-file" accept=".json" style="display:none;" onchange="handleFileSelect(event)" />
+  <!-- Модальное окно истории (минимум для работы) -->
+  <div id="history-modal" class="modal history-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>📜 История квестов</h3>
+        <button class="close-btn" onclick="closeHistoryModal()">×</button>
+      </div>
+      <div class="modal-body history-body">
+        <div class="history-stats-summary" id="history-stats-summary"></div>
+        <div id="history-container"></div>
+      </div>
+      <div class="modal-footer history-footer">
+        <button class="btn btn-warning" onclick="clearHistory()">🗑️ Очистить историю</button>
+        <button class="btn btn-secondary" onclick="closeHistoryModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
 
+  <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleFileSelect(event)">
   <script src="script.js"></script>
 </body>
 </html>

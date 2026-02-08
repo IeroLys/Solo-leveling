@@ -27,6 +27,15 @@ function xpRequiredForLevel(level) {
   return total;
 }
 
+// === НАСТРОЙКИ СЛОЖНОСТИ ===
+const DIFFICULTY_CONFIG = {
+  1: { xp: 30, label: 'Оч. лёгкая', color: '#4da6ff' },
+  2: { xp: 50, label: 'Лёгкая', color: '#4dff4d' },
+  3: { xp: 80, label: 'Средняя', color: '#ffd166' },
+  4: { xp: 130, label: 'Выше сред.', color: '#ff9e66' },
+  5: { xp: 220, label: 'Сложная', color: '#ff4d4d' }
+};
+
 // Альтернатива (более эффективная, но с осторожностью из-за float):
 /*
 function xpRequiredForLevel(level) {
@@ -241,7 +250,10 @@ function openAddModal() {
   currentEditIndex = null;
   document.getElementById('modal-title').textContent = 'Добавить квест';
   document.getElementById('edit-todo-text').value = '';
-  document.getElementById('edit-todo-xp').value = '';
+  
+  // Сбрасываем выбор сложности на "Среднюю" (3)
+  updateDifficultyUI(3);
+  
   document.querySelectorAll('.edit-stat-cb').forEach(cb => cb.checked = false);
   document.getElementById('edit-modal').classList.add('active');
 }
@@ -251,7 +263,25 @@ function editTodo(index) {
   currentEditIndex = index;
   document.getElementById('modal-title').textContent = 'Редактировать квест';
   document.getElementById('edit-todo-text').value = todo.text;
-  document.getElementById('edit-todo-xp').value = todo.xp;
+  
+  // Определяем уровень сложности по XP
+  let selectedLevel = 3; // по умолчанию средняя
+  for (const [level, config] of Object.entries(DIFFICULTY_CONFIG)) {
+    if (config.xp === todo.xp) {
+      selectedLevel = parseInt(level);
+      break;
+    }
+  }
+  // Если не нашли точное совпадение - выбираем ближайшее
+  if (selectedLevel === 3 && !Object.values(DIFFICULTY_CONFIG).some(c => c.xp === todo.xp)) {
+    const xpValues = Object.values(DIFFICULTY_CONFIG).map(c => c.xp);
+    const closestIndex = xpValues.reduce((i, x, j, arr) =>
+  Math.abs(x - todo.xp) < Math.abs(arr[i] - todo.xp) ? j : i, 0);
+selectedLevel = parseInt(Object.keys(DIFFICULTY_CONFIG)[closestIndex]);
+  }
+  
+  updateDifficultyUI(parseInt(selectedLevel));
+  
   document.querySelectorAll('.edit-stat-cb').forEach(cb => {
     cb.checked = todo.statTypes.includes(cb.value);
   });
@@ -432,6 +462,50 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
+// Обновление интерфейса выбора сложности
+function updateDifficultyUI(level) {
+  const markers = document.querySelectorAll('.ruler-marker');
+  const thumb = document.getElementById('ruler-thumb');
+  const progress = document.getElementById('ruler-progress'); // Исправлено!
+  const previewLabel = document.querySelector('.preview-label');
+  const previewXP = document.querySelector('.preview-xp');
+  const xpField = document.getElementById('edit-todo-xp');
+  
+  markers.forEach(marker => {
+    marker.classList.remove('active', 'marker-select');
+    if (parseInt(marker.dataset.level) === level) {
+      marker.classList.add('active', 'marker-select');
+      setTimeout(() => marker.classList.remove('marker-select'), 400);
+    }
+  });
+  
+  const position = ((level - 1) / 4) * 100;
+  thumb.style.left = `calc(${position}% - 14px)`;
+  progress.style.width = `${position + 20}%`; // Исправлено!
+  
+  const config = DIFFICULTY_CONFIG[level];
+  previewLabel.textContent = config.label;
+  previewLabel.style.color = config.color;
+  previewXP.textContent = `${config.xp} XP`;
+  xpField.value = config.xp;
+}
+
+// Обработчик клика по маркеру
+function handleDifficultyClick(event) {
+  if (event.target.classList.contains('ruler-marker')) {
+    const level = parseInt(event.target.dataset.level);
+    updateDifficultyUI(level);
+  }
+}
+
+// Инициализация выбора сложности
+function initDifficultySelector() {
+  const ruler = document.querySelector('.difficulty-ruler');
+  if (!ruler) return; // Защита от ошибки
+  ruler.addEventListener('click', handleDifficultyClick);
+  updateDifficultyUI(3);
+}
+
 // Экспорт истории в отдельный файл
 function exportHistory() {
   if (userData.history.length === 0) {
@@ -565,6 +639,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('edit-modal').addEventListener('click', (e) => {
     if (e.target.id === 'edit-modal') closeEditModal();
   });
+  initDifficultySelector();
   loadUserData();
   setInterval(updateTimer, 1000);
   updateTimer();
