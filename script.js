@@ -258,6 +258,8 @@ function openAddModal() {
   document.getElementById('edit-modal').classList.add('active');
 }
 
+
+
 function editTodo(index) {
   const todo = userData.todos[index];
   currentEditIndex = index;
@@ -471,6 +473,7 @@ function updateDifficultyUI(level) {
   const previewXP = document.querySelector('.preview-xp');
   const xpField = document.getElementById('edit-todo-xp');
   
+  
   markers.forEach(marker => {
     marker.classList.remove('active', 'marker-select');
     if (parseInt(marker.dataset.level) === level) {
@@ -479,9 +482,25 @@ function updateDifficultyUI(level) {
     }
   });
   
-  const position = ((level - 1) / 4) * 100;
+  /*const position = ((level - 1) / 4) * 100;
   thumb.style.left = `calc(${position}% - 14px)`;
-  progress.style.width = `${position + 20}%`; // Исправлено!
+  progress.style.width = `${position + 20}%`; // Исправлено!*/
+
+  // ПОЗИЦИОНИРУЕМ ПОЛЗУНОК ТОЧНО ПО ЦЕНТРУ АКТИВНОГО МАРКЕРА
+  const activeMarker = document.querySelector(`.ruler-marker[data-level="${level}"]`);
+  if (activeMarker && thumb) {
+    const markerRect = activeMarker.getBoundingClientRect();
+    const rulerRect = document.querySelector('.difficulty-ruler').getBoundingClientRect();
+    const thumbOffset = markerRect.left + markerRect.width / 2 - rulerRect.left - thumb.offsetWidth / 2;
+    thumb.style.left = `${thumbOffset}px`;
+  }
+
+  // Обновляем ДЛИНУ голубой полосы (прогресс до выбранного уровня)
+  if (progress) {
+    // Уровни: 1 → 0%, 2 → 25%, 3 → 50%, 4 → 75%, 5 → 100%
+    const percent = ((level - 1) / 4) * 100;
+    progress.style.width = `${percent}%`;
+  }
   
   const config = DIFFICULTY_CONFIG[level];
   previewLabel.textContent = config.label;

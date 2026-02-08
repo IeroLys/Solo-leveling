@@ -917,7 +917,7 @@ body {
 .ruler-thumb {
   position: absolute;
   top: 50%;
-  left: calc(80% - 14px);
+  left: 0;
   width: 28px;
   height: 28px;
   border-radius: 50%;
