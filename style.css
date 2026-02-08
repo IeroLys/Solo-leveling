@@ -71,9 +71,9 @@ body {
 }
 .system-subtitle {
   font-size: 0.8rem;
-  opacity: 0.8;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+  color: white;
 }
 .system-icon {
   font-size: 1.6rem;
@@ -917,7 +917,6 @@ body {
 .ruler-thumb {
   position: absolute;
   top: 50%;
-  left: 0;
   width: 28px;
   height: 28px;
   border-radius: 50%;

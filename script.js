@@ -246,19 +246,21 @@ function toggleTodo(index) {
 // === РЕДАКТИРОВАНИЕ ===
 let currentEditIndex = null;
 
+
 function openAddModal() {
-  currentEditIndex = null;
-  document.getElementById('modal-title').textContent = 'Добавить квест';
-  document.getElementById('edit-todo-text').value = '';
-  
-  // Сбрасываем выбор сложности на "Среднюю" (3)
-  updateDifficultyUI(3);
-  
-  document.querySelectorAll('.edit-stat-cb').forEach(cb => cb.checked = false);
-  document.getElementById('edit-modal').classList.add('active');
+    currentEditIndex = null;
+    document.getElementById('modal-title').textContent = 'Добавить квест';
+    document.getElementById('edit-todo-text').value = '';
+    document.querySelectorAll('.edit-stat-cb').forEach(cb => cb.checked = false);
+    document.getElementById('edit-modal').classList.add('active');
+    
+    // Двойной RAF — гарантирует, что layout уже обновлён
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            updateDifficultyUI(3);
+        });
+    });
 }
-
-
 
 function editTodo(index) {
   const todo = userData.todos[index];
@@ -278,16 +280,23 @@ function editTodo(index) {
   if (selectedLevel === 3 && !Object.values(DIFFICULTY_CONFIG).some(c => c.xp === todo.xp)) {
     const xpValues = Object.values(DIFFICULTY_CONFIG).map(c => c.xp);
     const closestIndex = xpValues.reduce((i, x, j, arr) =>
-  Math.abs(x - todo.xp) < Math.abs(arr[i] - todo.xp) ? j : i, 0);
-selectedLevel = parseInt(Object.keys(DIFFICULTY_CONFIG)[closestIndex]);
+      Math.abs(x - todo.xp) < Math.abs(arr[i] - todo.xp) ? j : i, 0);
+    selectedLevel = parseInt(Object.keys(DIFFICULTY_CONFIG)[closestIndex]);
   }
-  
-  updateDifficultyUI(parseInt(selectedLevel));
-  
+
   document.querySelectorAll('.edit-stat-cb').forEach(cb => {
     cb.checked = todo.statTypes.includes(cb.value);
   });
+  
   document.getElementById('edit-modal').classList.add('active');
+  
+  // Двойной RAF — гарантирует, что layout уже обновлён
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            updateDifficultyUI(3);
+        });
+    });
+
 }
 
 function saveEdit() {
@@ -464,6 +473,55 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
+function updateDifficultyUI(level) {
+    const markers = document.querySelectorAll('.ruler-marker');
+    const thumb = document.getElementById('ruler-thumb');
+    const progress = document.getElementById('ruler-progress');
+    const previewLabel = document.querySelector('.preview-label');
+    const previewXP = document.querySelector('.preview-xp');
+    const xpField = document.getElementById('edit-todo-xp');
+
+    // Обновляем активный маркер
+    markers.forEach(marker => {
+        marker.classList.toggle('active', parseInt(marker.dataset.level) === level);
+        if (parseInt(marker.dataset.level) === level) {
+            marker.classList.add('marker-select');
+            setTimeout(() => marker.classList.remove('marker-select'), 400);
+        }
+    });
+
+    // === КЛЮЧЕВОЕ: ПОЗИЦИОНИРОВАНИЕ ЧЕРЕЗ getBoundingClientRect() ===
+    const activeMarker = document.querySelector(`.ruler-marker[data-level="${level}"]`);
+    const ruler = document.querySelector('.difficulty-ruler');
+
+    if (activeMarker && thumb && ruler) {
+        // Убедимся, что элементы видны и измеряемы
+        const rulerRect = ruler.getBoundingClientRect();
+        const markerRect = activeMarker.getBoundingClientRect();
+
+        // Центр маркера относительно ruler'а
+        const centerOffset = markerRect.left + markerRect.width / 2 - rulerRect.left;
+        // Смещаем thumb так, чтобы его центр совпал с центром маркера
+        const thumbLeft = centerOffset - thumb.offsetWidth / 2;
+
+        thumb.style.left = `${thumbLeft}px`;
+    }
+
+    // Обновляем прогресс-бар (голубая полоса)
+    if (progress) {
+        const percent = ((level - 1) / 4) * 100; // 0 → 100%
+        progress.style.width = `${percent}%`;
+    }
+
+    // Обновляем текст
+    const config = DIFFICULTY_CONFIG[level];
+    previewLabel.textContent = config.label;
+    previewLabel.style.color = config.color;
+    previewXP.textContent = `${config.xp} XP`;
+    xpField.value = config.xp;
+}
+
+/*
 // Обновление интерфейса выбора сложности
 function updateDifficultyUI(level) {
   const markers = document.querySelectorAll('.ruler-marker');
@@ -481,10 +539,6 @@ function updateDifficultyUI(level) {
       setTimeout(() => marker.classList.remove('marker-select'), 400);
     }
   });
-  
-  /*const position = ((level - 1) / 4) * 100;
-  thumb.style.left = `calc(${position}% - 14px)`;
-  progress.style.width = `${position + 20}%`; // Исправлено!*/
 
   // ПОЗИЦИОНИРУЕМ ПОЛЗУНОК ТОЧНО ПО ЦЕНТРУ АКТИВНОГО МАРКЕРА
   const activeMarker = document.querySelector(`.ruler-marker[data-level="${level}"]`);
@@ -507,7 +561,7 @@ function updateDifficultyUI(level) {
   previewLabel.style.color = config.color;
   previewXP.textContent = `${config.xp} XP`;
   xpField.value = config.xp;
-}
+}*/
 
 // Обработчик клика по маркеру
 function handleDifficultyClick(event) {
