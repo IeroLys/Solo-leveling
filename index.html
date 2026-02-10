@@ -6,7 +6,6 @@
     <title>🎮 Solo Leveling System</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
     <div class="background-overlay"></div>
@@ -100,12 +99,11 @@
         
         <div class="misc-section">
             <div class="section-title misc-section-title">
-                🧭 Miscs
-                <span class="quest-count" id="quest-count">0</span>
+                🧭 Miscs <span class="quest-count" id="quest-count">0</span>
             </div>
             <div class="misc-info">
                 <div class="misc-boost-info">
-                    ✨ Завершайте задачи из жизни, чтобы получить временный буст к дейликам. Буст действует 2 дня и применяется к следующему завершённому дейлику с соответствующим статом.
+                    ✨ Завершайте задачи из жизни, чтобы получить временный буст к дейликам. Бусты складываются! Отмените задачу, чтобы удалить её буст.
                 </div>
             </div>
             <div id="misc-container"></div>
@@ -262,7 +260,7 @@
                         </label>
                     </div>
                     <div class="misc-boost-info" style="margin-top: 10px;">
-                        💡 Завершение этой задачи даст временный буст к дейликам со статом <span id="boost-target">Strength</span>. Буст действует 2 дня.
+                        💡 Завершение этой задачи даст <span id="boost-amount">+15%</span> буст к дейликам со статом <span id="boost-target">Strength</span>. Бусты складываются!
                     </div>
                 </div>
             </div>
@@ -300,7 +298,6 @@
         </div>
     </div>
 
-    <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleFileSelect(event)">
     <script src="script.js"></script>
 </body>
 </html>
