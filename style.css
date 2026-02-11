@@ -904,7 +904,7 @@ body {
     color: #fff;
     font-weight: bold;
 }
-.history-boosts-badge {
+/*.history-boosts-badge {
     background: linear-gradient(135deg, #9f50ff 0%, #c88cff 100%);
     color: white;
     font-size: 0.75rem;
@@ -914,10 +914,22 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    margin-top: 6px; /* отступ от предыдущих элементов */
-    max-width: fit-content; /* ширина по содержимому */
+    margin-top: 6px; 
+    max-width: fit-content; 
     box-shadow: 0 1px 4px rgba(100, 50, 180, 0.4);
+}*/
+
+.history-boosts-badge {
+    background: rgba(100, 50, 150, 0.3);
+    border-radius: 8px;
+    margin-top: 6px;
+    padding: 5px 12px;
+    max-width: fit-content;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: white;
 }
+
 .history-footer {
     justify-content: space-between;
     flex-wrap: wrap;
