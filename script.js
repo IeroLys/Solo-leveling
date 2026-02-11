@@ -838,7 +838,7 @@ function renderHistory() {
                 const boostDetails = entry.appliedBoosts.map(boost => 
                     `${statIcons[boost.statType] || boost.statType.charAt(0).toUpperCase()} +${boost.percentage}% (${escapeHtml(boost.sourceText)})`
                 ).join(', ');
-                boostInfo = `<div class="boost-badge">Бусты: ${boostDetails}</div>`;
+                boostInfo = `<div class="history-boosts-badge">Бусты: ${boostDetails}</div>`;
             }
             
             const safeText = escapeHtml(entry.text);
