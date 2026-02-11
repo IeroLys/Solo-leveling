@@ -1,3 +1,4 @@
+
 // === ДАННЫЕ ===
 let userData = {
     totalXP: 0,
@@ -243,7 +244,6 @@ function toggleMisc(index) {
         userData.boosts = userData.boosts.filter(boost => boost.taskId !== misc.id);
         misc.completed = false;
         delete misc.expiresAt;
-        delete misc.appliedBoosts;
     } else {
         // Выполнение задачи - создаём буст
         const boostConfig = DIFFICULTY_CONFIG[misc.difficulty] || DIFFICULTY_CONFIG[3];
@@ -270,7 +270,6 @@ function toggleMisc(index) {
 function deleteMisc(index) {
     if (!confirm('Удалить задачу жизни?')) return;
     const misc = userData.miscTodos[index];
-    
     // Удаляем все бусты, созданные этой задачей
     if (misc.id) {
         userData.boosts = userData.boosts.filter(boost => boost.taskId !== misc.id);
@@ -284,13 +283,18 @@ function deleteMisc(index) {
 // === УПРАВЛЕНИЕ ДЕЙЛИКАМИ ===
 function toggleTodo(index) {
     const todo = userData.todos[index];
-    
     if (todo.completed) {
-        // Отмена выполнения - возвращаем XP, но НЕ возвращаем бусты (они уже сгорели)
+        // Отмена выполнения - возвращаем XP и удаляем из истории
         removeXP(todo.awardedXP || todo.xp, todo.statTypes);
         todo.completed = false;
         delete todo.awardedXP;
         delete todo.appliedBoosts;
+        
+        // Удаляем запись из истории
+        if (todo.historyId) {
+            userData.history = userData.history.filter(entry => entry.id !== todo.historyId);
+            delete todo.historyId;
+        }
     } else {
         // Расчёт бустов для этого дейлика
         const { totalPercentage, activeBoosts } = getActiveBoostsForStats(todo.statTypes);
@@ -314,7 +318,7 @@ function toggleTodo(index) {
         }));
         
         // Добавляем в историю
-        userData.history.push({
+        const historyEntry = {
             id: Date.now(),
             text: todo.text,
             baseXP: todo.xp,
@@ -323,7 +327,9 @@ function toggleTodo(index) {
             statTypes: [...todo.statTypes],
             appliedBoosts: todo.appliedBoosts,
             completedAt: new Date().toISOString()
-        });
+        };
+        userData.history.push(historyEntry);
+        todo.historyId = historyEntry.id; // Сохраняем ID истории в задаче
         
         // Ограничиваем историю
         if (userData.history.length > 200) {
@@ -362,8 +368,12 @@ function renderUI() {
     const questCount = userData.todos.filter(t => !t.completed).length;
     document.getElementById('quest-count').textContent = questCount;
     
+    const miscCount = userData.miscTodos.filter(m => !m.completed).length;
+    document.getElementById('misc-count').textContent = miscCount;
+    
     renderTodoList();
     renderMiscList();
+
 }
 
 function renderTodoList() {
@@ -404,7 +414,7 @@ function renderTodoList() {
         todoElement.className = `todo-item ${todo.completed ? 'completed' : ''}`;
         todoElement.innerHTML = `
             <input type="checkbox" ${todo.completed ? 'checked' : ''}
-                 onchange="toggleTodo(${index})">
+                onchange="toggleTodo(${index})">
             <div class="task-info">
                 <div class="task-text">${escapeHtml(todo.text)}</div>
                 ${statBadges ? `<div class="task-stats">${statBadges}</div>` : ''}
@@ -452,36 +462,43 @@ function renderMiscList() {
         const boostStatIcon = statIcons[misc.boostStatType] || '🌟';
         const boostStatName = statNames[misc.boostStatType] || 'Unknown';
         
-        // Формируем информацию об активных бустах от этой задачи
-        let boostBadges = '';
-        if (misc.completed && activeBoostsByTask[misc.id]) {
-            boostBadges = `
-                <div class="boost-list">
-                    ${activeBoostsByTask[misc.id].map(boost => `
-                        <div class="boost-item ${new Date(boost.expiresAt) < new Date() ? 'expired' : ''}">
-                            ${boostStatIcon} +${boost.percentage}% 
-                            <span class="boost-source">до ${new Date(boost.expiresAt).toLocaleDateString('ru-RU')}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+        // Build the misc-meta content conditionally
+        let miscMetaContent = `
+            <span class="stat-badge">${boostStatIcon} ${boostStatName}</span>
+        `;
+        
+        if (!misc.completed) {
+            // For uncompleted tasks, show the yellow badge
+            miscMetaContent += `<span class="boost-badge">+${boostConfig.boost}% буст</span>`;
+        } else {
+            // For completed tasks, show active boost details
+            if (activeBoostsByTask[misc.id] && activeBoostsByTask[misc.id].length > 0) {
+                const boost = activeBoostsByTask[misc.id][0];
+                const isExpired = new Date(boost.expiresAt) < new Date();
+                const expiryDateStr = new Date(boost.expiresAt).toLocaleDateString('ru-RU');
+                
+                miscMetaContent += `
+                    <span class="boost-badge ${isExpired ? 'expired' : 'active'}">
+                        ${boostStatIcon} +${boost.percentage}% буст
+                        <span class="boost-source">(до ${expiryDateStr})</span>
+                    </span>
+                `;
+            } else {
+                // Fallback if no active boost found
+                miscMetaContent += `<span class="boost-badge expired">+${boostConfig.boost}% буст (истёк)</span>`;
+            }
         }
         
         const miscElement = document.createElement('div');
         miscElement.className = `misc-item ${misc.completed ? 'completed' : ''}`;
         miscElement.innerHTML = `
             <input type="checkbox" ${misc.completed ? 'checked' : ''}
-                 onchange="toggleMisc(${index})">
+                onchange="toggleMisc(${index})">
             <div class="task-info">
                 <div class="task-text">${escapeHtml(misc.text)}</div>
                 <div class="misc-meta">
-                    <span class="stat-badge">${boostStatIcon} ${boostStatName}</span>
-                    <span class="boost-badge">+${boostConfig.boost}% буст</span>
+                    ${miscMetaContent}
                 </div>
-                ${boostBadges}
-                ${misc.completed && misc.expiresAt ? 
-                    `<span class="boost-expiry">⏰ Действует до: ${new Date(misc.expiresAt).toLocaleDateString('ru-RU')}</span>` : 
-                    ''}
             </div>
             <div class="misc-actions">
                 <div class="action-buttons-row">
@@ -498,7 +515,6 @@ function renderMiscList() {
 let currentEditIndex = null;
 let currentMiscEditIndex = null;
 
-// ... (функции редактирования дейликов без изменений) ...
 function openAddModal() {
     currentEditIndex = null;
     document.getElementById('modal-title').textContent = 'Добавить квест';
@@ -556,16 +572,51 @@ function saveEdit() {
     } else {
         const oldTodo = userData.todos[currentEditIndex];
         const wasCompleted = oldTodo.completed;
+        
+        // If was completed, remove XP and history entry
         if (wasCompleted) {
             removeXP(oldTodo.awardedXP || oldTodo.xp, oldTodo.statTypes);
+            
+            // Remove from history
+            if (oldTodo.historyId) {
+                userData.history = userData.history.filter(entry => entry.id !== oldTodo.historyId);
+            }
         }
+        
         userData.todos[currentEditIndex] = { text, xp, statTypes, completed: false };
         
+        // If was completed, re-add XP and create new history entry
         if (wasCompleted) {
-            const totalXP = xp;
+            const { totalPercentage, activeBoosts } = getActiveBoostsForStats(statTypes);
+            const boostXP = Math.round(xp * (totalPercentage / 100));
+            const totalXP = xp + boostXP;
+            
+            // Remove used boosts
+            const boostIdsToRemove = activeBoosts.map(b => b.id);
+            removeBoostsByIds(boostIdsToRemove);
+            
+            // Add XP
             addXP(totalXP, statTypes);
             userData.todos[currentEditIndex].completed = true;
             userData.todos[currentEditIndex].awardedXP = totalXP;
+            
+            // Create new history entry
+            const historyEntry = {
+                id: Date.now(),
+                text,
+                baseXP: xp,
+                boostXP,
+                totalXP,
+                statTypes: [...statTypes],
+                appliedBoosts: activeBoosts.map(b => ({
+                    statType: b.statType,
+                    percentage: b.percentage,
+                    sourceText: b.sourceText
+                })),
+                completedAt: new Date().toISOString()
+            };
+            userData.history.push(historyEntry);
+            userData.todos[currentEditIndex].historyId = historyEntry.id;
         }
     }
     
@@ -582,9 +633,16 @@ function closeEditModal() {
 function deleteTodo(index) {
     if (!confirm('Удалить квест?')) return;
     const todo = userData.todos[index];
+    
+    // If completed, remove XP and history entry
     if (todo.completed) {
         removeXP(todo.awardedXP || todo.xp, todo.statTypes);
+        
+        if (todo.historyId) {
+            userData.history = userData.history.filter(entry => entry.id !== todo.historyId);
+        }
     }
+    
     userData.todos.splice(index, 1);
     saveUserData();
     renderUI();
@@ -607,7 +665,6 @@ function editMisc(index) {
     document.getElementById('misc-modal-title').textContent = 'Редактировать задачу';
     document.getElementById('edit-misc-text').value = misc.text;
     document.querySelector(`input[name="boost-stat"][value="${misc.boostStatType}"]`).checked = true;
-    
     document.getElementById('edit-misc-modal').classList.add('active');
     updateMiscDifficultyUI(misc.difficulty);
     updateBoostDisplay();
@@ -635,7 +692,7 @@ function saveMiscEdit() {
     } else {
         const oldMisc = userData.miscTodos[currentMiscEditIndex];
         // Сохраняем ID при редактировании
-        userData.miscTodos[currentMiscEditIndex] = { 
+        const newMisc = { 
             id: oldMisc.id,
             text, 
             difficulty, 
@@ -663,7 +720,10 @@ function saveMiscEdit() {
             };
             
             userData.boosts.push(boost);
+            newMisc.expiresAt = expiresAt.toISOString();
         }
+        
+        userData.miscTodos[currentMiscEditIndex] = newMisc;
     }
     
     closeMiscEditModal();
@@ -685,13 +745,13 @@ function updateBoostDisplay() {
         career: 'Career',
         willpower: 'Willpower'
     };
-    
     document.getElementById('boost-target').textContent = statNames[selectedStat];
     document.getElementById('boost-amount').textContent = `+${boostConfig.boost}%`;
 }
 
-// === ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) ===
+// === ОСТАЛЬНЫЕ ФУНКЦИИ ===
 function resetDailyTodos() {
+    // Only reset uncompleted todos, keep completed ones for history
     userData.todos = userData.todos.filter(todo => !todo.completed);
     saveUserData();
 }
@@ -721,7 +781,7 @@ function renderHistory() {
     const totalEntries = userData.history.length;
     const totalXP = userData.history.reduce((sum, entry) => sum + entry.totalXP, 0);
     document.getElementById('history-stats-summary').innerHTML = 
-        `<span>Всего выполнено: <strong>${totalEntries}</strong></span> ` +
+        `<span>Всего выполнено: <strong>${totalEntries}</strong></span>` +
         `<span>Получено XP: <strong>${totalXP}</strong></span>`;
     
     if (userData.history.length === 0) {

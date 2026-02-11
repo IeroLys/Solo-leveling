@@ -19,7 +19,7 @@
         
         <div class="avatar-container">
             <div class="avatar">
-                <div class="avatar-icon">P</div>
+                <div class="avatar-icon">🌌</div>
             </div>
         </div>
         
@@ -32,12 +32,13 @@
                 <div class="xp-fill" id="xp-progress"></div>
             </div>
             <div class="xp-text">
-                <span id="current-xp">0</span>/<span id="max-xp">100</span> XP
+                <span id="current-xp">0</span> / <span id="max-xp">100</span> XP
             </div>
         </div>
         
         <div class="stats-section">
             <div class="section-title">Stats</div>
+            
             <div class="stat-card">
                 <div class="stat-header">
                     <div class="stat-icon">💪</div>
@@ -52,6 +53,7 @@
                 </div>
                 <div class="stat-xp-text" id="strength-xp">0/100 XP</div>
             </div>
+            
             <div class="stat-card">
                 <div class="stat-header">
                     <div class="stat-icon">💸</div>
@@ -66,6 +68,7 @@
                 </div>
                 <div class="stat-xp-text" id="career-xp">0/100 XP</div>
             </div>
+            
             <div class="stat-card">
                 <div class="stat-header">
                     <div class="stat-icon">🔥</div>
@@ -82,16 +85,14 @@
             </div>
         </div>
         
-        <div class="section-divider"></div>
-        
         <div class="todo-section">
             <div class="section-title">
                 📋 Daily Quests <span class="quest-count" id="quest-count">0</span>
             </div>
             <div id="todo-container"></div>
             <div class="add-todo-btn" id="add-todo-btn">
-                <div class="plus-icon">+</div>
-                <div>Добавить квест</div>
+                <span class="plus-icon">+</span>
+                <span>Добавить квест</span>
             </div>
         </div>
         
@@ -99,21 +100,17 @@
         
         <div class="misc-section">
             <div class="section-title misc-section-title">
-                🧭 Miscs <span class="quest-count" id="quest-count">0</span>
+                🧹 Miscs <span class="misc-count" id="misc-count">0</span>
             </div>
-            <div class="misc-info">
-                <div class="misc-boost-info">
-                    ✨ Завершайте задачи из жизни, чтобы получить временный буст к дейликам. Бусты складываются! Отмените задачу, чтобы удалить её буст.
-                </div>
+            <div class="misc-boost-info">
+                ✨ Завершайте задачи из жизни, чтобы получить временный буст к дейликам.
             </div>
             <div id="misc-container"></div>
             <div class="add-misc-btn" id="add-misc-btn">
-                <div class="plus-icon">+</div>
-                <div>Добавить задачу</div>
+                <span class="plus-icon">+</span>
+                <span>Добавить задачу</span>
             </div>
         </div>
-        
-        <div class="section-divider"></div>
         
         <div class="timer-section">
             <div class="timer-card">
@@ -132,20 +129,20 @@
             </button>
             <button class="btn btn-import" id="import-btn">
                 📥 Импорт
-                <input type="file" id="import-file" accept=".json" style="display: none;">
             </button>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
             <button class="btn btn-reset" id="reset-btn">
                 🗑️ Сброс
             </button>
         </div>
     </div>
     
-    <!-- Modal for adding/editing daily quests -->
+    <!-- Modal for editing/adding todos -->
     <div class="modal" id="edit-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="modal-title">Добавить квест</h3>
-                <button class="close-btn" id="close-modal">&times;</button>
+                <button class="close-btn" id="close-modal">×</button>
             </div>
             <div class="modal-body">
                 <input type="text" class="modal-input" id="edit-todo-text" placeholder="Текст квеста">
@@ -184,15 +181,15 @@
                     <div class="stat-selector-modal">
                         <label class="stat-option">
                             <input type="checkbox" class="edit-stat-cb" value="strength">
-                            <span>💪</span> Strength
+                            <span>💪</span> <span>Strength</span>
                         </label>
                         <label class="stat-option">
                             <input type="checkbox" class="edit-stat-cb" value="career">
-                            <span>💸</span> Career
+                            <span>💸</span> <span>Career</span>
                         </label>
                         <label class="stat-option">
                             <input type="checkbox" class="edit-stat-cb" value="willpower">
-                            <span>🔥</span> Willpower
+                            <span>🔥</span> <span>Willpower</span>
                         </label>
                     </div>
                 </div>
@@ -204,15 +201,15 @@
         </div>
     </div>
     
-    <!-- Modal for adding/editing Misc tasks -->
+    <!-- Modal for editing/adding miscs -->
     <div class="modal" id="edit-misc-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="misc-modal-title">Добавить задачу жизни</h3>
-                <button class="close-btn" id="close-misc-modal">&times;</button>
+                <button class="close-btn" id="close-misc-modal">×</button>
             </div>
             <div class="modal-body">
-                <input type="text" class="modal-input" id="edit-misc-text" placeholder="Текст задачи (например: сходить в магазин)">
+                <input type="text" class="modal-input" id="edit-misc-text" placeholder="Текст задачи">
                 
                 <div class="modal-row">
                     <div class="modal-input-group">
@@ -237,7 +234,7 @@
                             </div>
                             <div class="difficulty-preview">
                                 <span class="preview-label">Средняя</span>
-                                <span class="preview-xp" id="edit-misc-boost">+15% буст</span>
+                                <span class="preview-xp" id="edit-misc-boost" data-level="3">+15% буст</span>
                             </div>
                         </div>
                     </div>
@@ -247,21 +244,22 @@
                     <label>Буст к стату:</label>
                     <div class="boost-selector">
                         <label class="boost-option">
-                            <input type="radio" name="boost-stat" class="boost-stat" value="strength" checked>
-                            <span>💪</span> Strength
+                            <input type="radio" name="boost-stat" value="strength" checked>
+                            <span>💪</span> <span>Strength</span>
                         </label>
                         <label class="boost-option">
-                            <input type="radio" name="boost-stat" class="boost-stat" value="career">
-                            <span>💸</span> Career
+                            <input type="radio" name="boost-stat" value="career">
+                            <span>💸</span> <span>Career</span>
                         </label>
                         <label class="boost-option">
-                            <input type="radio" name="boost-stat" class="boost-stat" value="willpower">
-                            <span>🔥</span> Willpower
+                            <input type="radio" name="boost-stat" value="willpower">
+                            <span>🔥</span> <span>Willpower</span>
                         </label>
                     </div>
-                    <div class="misc-boost-info" style="margin-top: 10px;">
-                        💡 Завершение этой задачи даст <span id="boost-amount">+15%</span> буст к дейликам со статом <span id="boost-target">Strength</span>. Бусты складываются!
-                    </div>
+                </div>
+                
+                <div class="misc-boost-info" style="margin-top: 12px;">
+                    💡 Завершение этой задачи даст <span id="boost-amount">+15%</span> буст к дейликам со статом <span id="boost-target">Strength</span>.
                 </div>
             </div>
             <div class="modal-footer">
@@ -276,7 +274,7 @@
         <div class="modal-content history-modal">
             <div class="modal-header">
                 <h3>📜 История квестов</h3>
-                <button class="close-btn" id="close-history-modal">&times;</button>
+                <button class="close-btn" id="close-history-btn">×</button>
             </div>
             <div class="modal-body history-body">
                 <div class="history-stats-summary" id="history-stats-summary">
@@ -293,7 +291,7 @@
             </div>
             <div class="modal-footer history-footer">
                 <button class="btn btn-warning" id="clear-history-btn">🗑️ Очистить историю</button>
-                <button class="btn btn-secondary" id="close-history-btn">Закрыть</button>
+                <button class="btn btn-secondary" id="close-history-modal">Закрыть</button>
             </div>
         </div>
     </div>
@@ -301,3 +299,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+

@@ -296,7 +296,7 @@ body {
 .todo-section, .misc-section {
     margin: 18px 0;
 }
-.quest-count {
+.quest-count, .misc-count {
     background: rgba(0, 180, 255, 0.2);
     color: #00ccff;
     padding: 2px 8px;
@@ -365,10 +365,11 @@ body {
     gap: 4px;
     margin-top: 3px;
     flex-wrap: wrap;
+    align-items: center;
 }
 .stat-badge {
     background: rgba(0, 180, 255, 0.15);
-    color: #00ccff;
+    color: #00ccff; 
     padding: 2px 6px;
     border-radius: 8px;
     font-size: 0.75rem;
@@ -387,6 +388,21 @@ body {
     display: flex;
     align-items: center;
     gap: 2px;
+}
+.boost-badge.active {
+    background: linear-gradient(135deg, #9f50ff 0%, #c88cff 100%);
+    color: white;
+}
+.boost-badge.expired {
+    background: rgba(100, 100, 100, 0.3);
+    color: #aaa;
+    text-decoration: line-through;
+}
+.boost-source {
+    font-size: 0.7rem;
+    opacity: 0.85;
+    margin-left: 4px;
+    font-style: italic;
 }
 .xp-badge {
     background: linear-gradient(135deg, #00aaff 0%, #00ccff 100%);
@@ -414,7 +430,7 @@ body {
     font-size: 0.95rem;
 }
 .add-todo-btn:hover, .add-misc-btn:hover {
-    background: rgba(20, 30, 48, 0.7); 
+    background: rgba(20, 30, 48, 0.7);
     border-color: #00aaff;
     transform: scale(1.015);
 }
@@ -427,7 +443,7 @@ body {
 .add-todo-btn:hover .plus-icon, .add-misc-btn:hover .plus-icon {
     transform: rotate(90deg);
 }
-.todo-actions, .misc-actions {
+.todo-actions, .misc-actions { 
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -612,7 +628,7 @@ body {
 .close-btn:hover {
     background: rgba(0, 180, 255, 0.3);
     transform: rotate(90deg);
-} 
+}
 .modal-body { padding: 16px; }
 .modal-input {
     width: 100%;
@@ -751,7 +767,7 @@ body {
     gap: 8px;
 }
 .history-date-title::before {
-    content: "📅";
+    content: "📅 ";
 }
 .history-entries {
     display: flex;
@@ -978,7 +994,6 @@ body {
     .difficulty-preview { flex-direction: column; gap: 4px; text-align: center; }
     .preview-xp { font-size: 1.1rem; }
 }
-
 /* Misc section specific styles */
 .misc-section-title {
     background: linear-gradient(135deg, #9f50ff 0%, #c88cff 100%);
@@ -1028,12 +1043,6 @@ body {
 .boost-item.expired {
     opacity: 0.6;
     text-decoration: line-through;
-}
-.boost-source {
-    font-size: 0.7rem;
-    opacity: 0.85;
-    margin-left: 4px;
-    font-style: italic;
 }
 .section-divider {
     height: 1px;
