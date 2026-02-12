@@ -173,7 +173,7 @@ function saveUserData() {
 }
 
 // === XP СИСТЕМА ===
-function addXP(amount, statTypes = []) {
+/*function addXP(amount, statTypes = []) {
     userData.totalXP += amount;
     statTypes.forEach(statType => {
         if (userData.stats[statType]) {
@@ -182,6 +182,44 @@ function addXP(amount, statTypes = []) {
     });
     saveUserData();
     renderUI();
+}*/
+
+function addXP(amount, statTypes = []) {
+const oldMainLevel = getLevelFromTotalXP(userData.totalXP).level;
+const oldStatLevels = {};
+statTypes.forEach(statType => {
+oldStatLevels[statType] = getLevelFromTotalXP(userData.stats[statType].totalXP).level;
+});
+
+userData.totalXP += amount;
+statTypes.forEach(statType => {
+if (userData.stats[statType]) {
+userData.stats[statType].totalXP += amount;
+}
+});
+
+saveUserData();
+renderUI();
+
+// Проверка повышения уровня
+const newMainLevel = getLevelFromTotalXP(userData.totalXP).level;
+if (newMainLevel > oldMainLevel) {
+showLevelUpNotification(newMainLevel);
+}
+
+// Проверка повышения уровня статов
+statTypes.forEach(statType => {
+const newStatLevel = getLevelFromTotalXP(userData.stats[statType].totalXP).level;
+const oldLevel = oldStatLevels[statType];
+if (newStatLevel > oldLevel) {
+const statNames = {
+strength: 'Strength',
+career: 'Career',
+willpower: 'Willpower'
+};
+showSkillLevelUpNotification(statNames[statType], statType, newStatLevel);
+}
+});
 }
 
 function removeXP(amount, statTypes = []) {
@@ -334,6 +372,12 @@ function toggleTodo(index) {
         // Ограничиваем историю
         if (userData.history.length > 200) {
             userData.history = userData.history.slice(-200);
+        }
+
+        // Проверяем, все ли квесты завершены
+        const incompleteTodos = userData.todos.filter(t => !t.completed);
+        if (incompleteTodos.length === 0 && userData.todos.length > 0) {
+        showDailyQuestsCompleteNotification();
         }
     }
     
@@ -566,20 +610,27 @@ function saveEdit() {
         alert('Выберите хотя бы один стат для квеста');
         return;
     }
+
+    console.log(`[EDIT TODO] Saving todo | Index: ${currentEditIndex} | Text: "${text}" | XP: ${xp} | Stats: ${statTypes.join(', ')}`);
     
     if (currentEditIndex === null) {
         userData.todos.push({ text, xp, statTypes, completed: false });
+        console.log('[EDIT TODO] Added new todo');
     } else {
         const oldTodo = userData.todos[currentEditIndex];
         const wasCompleted = oldTodo.completed;
+        console.log(`[EDIT TODO] Editing existing todo | Was completed: ${wasCompleted} | Old XP: ${oldTodo.xp} | Old stats: ${oldTodo.statTypes?.join(', ')}`);
         
         // If was completed, remove XP and history entry
         if (wasCompleted) {
+            console.log('[EDIT TODO] Removing old completion data...');
             removeXP(oldTodo.awardedXP || oldTodo.xp, oldTodo.statTypes);
             
             // Remove from history
             if (oldTodo.historyId) {
+                const removedCount = userData.history.length;
                 userData.history = userData.history.filter(entry => entry.id !== oldTodo.historyId);
+                console.log(`[EDIT TODO] Removed ${removedCount - userData.history.length} history entries`);
             }
         }
         
@@ -966,6 +1017,178 @@ function handleMiscDifficultyClick(event) {
         const level = parseInt(event.target.dataset.level);
         updateMiscDifficultyUI(level);
     }
+}
+
+// === СИСТЕМА УВЕДОМЛЕНИЙ ===
+/*
+function showNotification(type, title, message) {
+    const container = document.getElementById('notification-container');
+    if (!container) {
+        console.error('[NOTIFICATION] Container not found!');
+        return;
+    }
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    const notificationId = `notif-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+    notification.dataset.notificationId = notificationId;
+    
+    notification.innerHTML = `
+        <div class="notification-content">
+            <h4 class="notification-title ${type}">${title}</h4>
+            <p class="notification-message">${message}</p>
+        </div>
+        <button class="notification-close" aria-label="Закрыть уведомление">×</button>
+    `;
+    
+    container.appendChild(notification);
+    console.log(`[NOTIFICATION] ${title} | ${message}`);
+    
+    // Авто-скрытие через 6 секунд
+    let timeoutId = setTimeout(() => {
+        fadeOutNotification(notification, notificationId);
+    }, 6000);
+    notification._timeoutId = timeoutId;
+    
+    // Обработчики кнопки и наведения
+    const closeBtn = notification.querySelector('.notification-close');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            clearTimeout(notification._timeoutId);
+            fadeOutNotification(notification, notificationId);
+        });
+        
+        notification.addEventListener('mouseenter', () => {
+            clearTimeout(notification._timeoutId);
+        });
+        
+        notification.addEventListener('mouseleave', () => {
+            notification._timeoutId = setTimeout(() => {
+                fadeOutNotification(notification, notificationId);
+            }, 3000);
+        });
+    }
+    
+    // Лимит уведомлений
+    const maxNotifications = 5;
+    while (container.children.length > maxNotifications) {
+        container.firstChild.remove();
+    }
+}
+
+function fadeOutNotification(notification, id) {
+    notification.style.animation = 'fadeOut 0.5s ease forwards';
+    setTimeout(() => {
+        if (notification.parentNode) notification.remove();
+    }, 500);
+}
+
+function showLevelUpNotification(newLevel) {
+    console.log(`[LEVEL UP] Достигнут уровень ${newLevel}`);
+    showNotification(
+        'level-up',
+        'Leveled up!',
+        `Lvl ${newLevel}`
+    );
+}
+
+function showSkillLevelUpNotification(statName, statType, newLevel) {
+    console.log(`[SKILL UP] ${statName} достиг ${newLevel} уровня`);
+    
+    const statIcons = {
+        strength: '💪',
+        career: '💸',
+        willpower: '🔥'
+    };
+    const icon = statIcons[statType] || '✨';
+    
+    showNotification(
+        'skill-up',
+        'Skill Level increased!',
+        `${icon} ${statName} Lvl ${newLevel}`
+    );
+}
+
+function showDailyQuestsCompleteNotification() {
+    console.log('[DAILY QUESTS] Все квесты завершены');
+    showNotification(
+        'success',
+        '🎯 Daily Quests Complete!',
+        'Все ежедневные квесты на сегодня завершены!'
+    );
+}
+*/
+
+function showNotification(type, title, message) {
+    const container = document.getElementById('notification-container');
+    if (!container) {
+        console.warn('[NOTIFICATION] Container not found');
+        return;
+    }
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.dataset.type = type;
+
+    notification.innerHTML = `
+        <div class="notification-content">
+            <h4 class="notification-title ${type}">${title}</h4>
+            <p class="notification-message">${message}</p>
+        </div>
+        <button class="notification-close" aria-label="Закрыть">×</button>
+    `;
+
+    container.appendChild(notification);
+
+    // Авто-скрытие через 6 секунд
+    let timeoutId = setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.4s forwards';
+        setTimeout(() => {
+            if (notification.parentNode) notification.remove();
+        }, 400);
+    }, 6000);
+
+    // Отмена таймера при наведении
+    notification.addEventListener('mouseenter', () => clearTimeout(timeoutId));
+    notification.addEventListener('mouseleave', () => {
+        timeoutId = setTimeout(() => {
+            notification.style.animation = 'fadeOut 0.4s forwards';
+            setTimeout(() => {
+                if (notification.parentNode) notification.remove();
+            }, 400);
+        }, 3000);
+    });
+
+    // Закрытие по кнопке
+    notification.querySelector('.notification-close').addEventListener('click', () => {
+        clearTimeout(timeoutId);
+        notification.style.animation = 'fadeOut 0.4s forwards';
+        setTimeout(() => {
+            if (notification.parentNode) notification.remove();
+        }, 400);
+    });
+
+    // Лимит уведомлений
+    if (container.children.length > 5) {
+        container.firstChild.remove();
+    }
+}
+
+function showLevelUpNotification(newLevel) {
+    console.log(`[LEVEL UP] Lvl ${newLevel}`);
+    showNotification('level-up', 'Leveled up!', `Lvl ${newLevel}`);
+}
+
+function showSkillLevelUpNotification(statName, statType, newLevel) {
+    console.log(`[SKILL UP] ${statName} → Lvl ${newLevel}`);
+    const icons = { strength: '💪', career: '💸', willpower: '🔥' };
+    const icon = icons[statType] || '✨';
+    showNotification('skill-up', 'Skill Level increased!', `${icon} ${statName}, Lvl ${newLevel}`);
+}
+
+function showDailyQuestsCompleteNotification() {
+    console.log('[DAILY QUESTS] All completed');
+    showNotification('success', '🎯 Daily Quests Complete!', 'Все ежедневные квесты на сегодня завершены!');
 }
 
 // === ТАЙМЕР И ЭКСПОРТ ===

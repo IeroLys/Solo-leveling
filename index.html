@@ -6,13 +6,17 @@
     <title>🎮 Solo Leveling System</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <audio id="levelUpSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
+<audio id="questCompleteSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
+<audio id="skillUpSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-new-item-game-notification-254.mp3" preload="auto"></audio>
 </head>
 <body>
     <div class="background-overlay"></div>
     <div class="container">
         <div class="system-header">
             <div class="system-title">
-                <h1>🎮 Solo Leveling System</h1>
+                <h1>Solo Leveling</h1>
                 <div class="system-subtitle">Player System</div>
             </div>
         </div>
@@ -298,6 +302,8 @@
         </div>
     </div>
 
+    <!-- Контейнер для уведомлений -->
+<div id="notification-container" class="notification-container"></div>
     <script src="script.js"></script>
 </body>
 </html>
