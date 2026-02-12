@@ -1491,119 +1491,31 @@ body {
     text-shadow: 0 0 4px rgba(0, 200, 255, 0.6);
     line-height: 1;
 }*/
-
-/* === УВЕДОМЛЕНИЕ: ЗАВЕРШЕНИЕ ДЕЙЛИКОВ — НАДЕЖНАЯ ГАЛОЧКА === */
+}
+/* === УВЕДОМЛЕНИЕ: ЗАВЕРШЕНИЕ ДЕЙЛИКОВ — ПРОСТОЙ ЭМОДЗИ === */
 .notification-detail.daily-complete {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 8px 0 0 0;
-    padding: 6px 0 !important;
+    font-size: 1.0rem !important; /* Крупный, но не огромный */
+    color: #00ccff; /* Голубой как в стиле Solo Leveling */
+    text-shadow:
+        0 0 8px rgba(0, 200, 255, 0.8),
+        0 0 15px rgba(0, 180, 255, 0.6),
+        0 0 25px rgba(0, 150, 220, 0.4);
+    line-height: 1;
+    padding: 0 !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    min-height: 32px;
-    height: auto;
-    width: 100%;
-    position: relative;
+    min-height: auto;
 }
 
-/* Основной контейнер иконки - явные размеры для всех устройств */
-.notification-detail.daily-complete .daily-check-icon {
-    display: block;
-    width: 24px;
-    height: 24px;
-    position: relative;
-    flex-shrink: 0;
-    margin: 0 auto;
-}
-
-/* Квадратная рамка */
-.notification-detail.daily-complete .daily-check-icon::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 2.5px solid #00e5ff;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background: rgba(0, 30, 50, 0.3);
-    animation: checkBounce 0.4s ease-out;
-}
-
-/* Анимация появления рамки */
-@keyframes checkBounce {
-    0% { transform: scale(0.8); opacity: 0; }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-/* Галочка - оптимизированное позиционирование */
-.notification-detail.daily-complete .daily-check-icon::after {
-    content: '';
-    position: absolute;
-    top: 5px;
-    left: 7px;
-    width: 4px;
-    height: 9px;
-    border: solid #4dff4d;
-    border-width: 0 2.5px 2.5px 0;
-    transform: rotate(45deg);
-    animation: drawCheck 0.5s ease-out 0.2s forwards;
-    opacity: 0;
-}
-
-/* Анимация рисования галочки */
-@keyframes drawCheck {
-    to { 
-        opacity: 1;
-        height: 9px;
-        top: 5px;
-    }
-}
-
-/* Fallback текстовая галочка (на случай проблем с CSS) */
-.notification-detail.daily-complete .daily-check-fallback {
-    font-size: 1.8rem;
-    color: #4dff4d;
-    animation: pulse 1.5s infinite;
-    position: absolute;
-    z-index: 10;
-    display: none;
-}
-
-/* Адаптивность для всех экранов */
-@media (min-width: 481px) {
-    .notification-detail.daily-complete .daily-check-icon {
-        width: 26px;
-        height: 26px;
-    }
-    .notification-detail.daily-complete .daily-check-icon::after {
-        top: 6px;
-        left: 8px;
-        width: 5px;
-        height: 10px;
-        border-width: 0 3px 3px 0;
-    }
-}
-
+/* Адаптив: чуть меньше на мобильных */
 @media (max-width: 480px) {
     .notification-detail.daily-complete {
-        min-height: 28px;
-        padding: 4px 0 !important;
+        font-size: 2.0rem;
+        margin: 6px 0 0 0;
     }
-    .notification-detail.daily-complete .daily-check-icon {
-        width: 22px;
-        height: 22px;
-    }
-    .notification-detail.daily-complete .daily-check-icon::after {
-        top: 4px;
-        left: 6px;
-        width: 3.5px;
-        height: 8px;
-        border-width: 0 2px 2px 0;
-    }
-}
 }

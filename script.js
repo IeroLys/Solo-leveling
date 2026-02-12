@@ -1204,13 +1204,8 @@ function showNotification(message, detail = null) {
     let detailBlock = '';
         if (detail) {
             if (detail.type === 'daily-complete') {
-                // Надежная разметка с fallback-галочкой
-                detailBlock = `
-                    <div class="notification-detail daily-complete">
-                        <span class="daily-check-icon"></span>
-                        <span class="daily-check-fallback">${detail.icon || '✅'}</span>
-                    </div>
-                `;
+                // Просто эмодзи в контейнере
+                detailBlock = `<div class="notification-detail daily-complete">${detail.icon || '✅'}</div>`;
             } else if (typeof detail === 'string') {
                 detailBlock = `<p class="notification-detail">${detail}</p>`;
             } else {
