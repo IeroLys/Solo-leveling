@@ -1118,7 +1118,7 @@ function showDailyQuestsCompleteNotification() {
     );
 }
 */
-
+/*
 function showNotification(type, title, message) {
     const container = document.getElementById('notification-container');
     if (!container) {
@@ -1189,6 +1189,101 @@ function showSkillLevelUpNotification(statName, statType, newLevel) {
 function showDailyQuestsCompleteNotification() {
     console.log('[DAILY QUESTS] All completed');
     showNotification('success', '🎯 Daily Quests Complete!', 'Все ежедневные квесты на сегодня завершены!');
+}*/
+
+// === СИСТЕМА УВЕДОМЛЕНИЙ (SOLO LEVELING STYLE) ===
+function showNotification(message, detail = null) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+
+    // Формируем блок деталей: поддержка строки или объекта {statName, statLevel}
+    // Формируем блок деталей: поддержка строки или объекта {statName, statLevel}
+    let detailBlock = '';
+        if (detail) {
+            if (detail.type === 'daily-complete') {
+                // Надежная разметка с fallback-галочкой
+                detailBlock = `
+                    <div class="notification-detail daily-complete">
+                        <span class="daily-check-icon"></span>
+                        <span class="daily-check-fallback">${detail.icon || '✅'}</span>
+                    </div>
+                `;
+            } else if (typeof detail === 'string') {
+                detailBlock = `<p class="notification-detail">${detail}</p>`;
+            } else {
+                detailBlock = `<div class="notification-detail">
+                    <span class="notif-stat-name">${detail.statName}</span>
+                    <span class="notif-stat-level">Lvl ${detail.statLevel}</span>
+                </div>`;
+            }
+        }
+
+    notification.innerHTML = `
+        <div class="notification-header">
+            <div class="notification-icon">!</div>
+            <h4 class="notification-title">NOTIFICATION</h4>
+        </div>
+        <p class="notification-message">${message}</p>
+        ${detailBlock}
+        <button class="notification-close" aria-label="Dismiss">×</button>
+    `;
+
+    container.appendChild(notification);
+
+    // Анимация появления
+    setTimeout(() => notification.classList.add('visible'), 10);
+
+    // Авто-скрытие через 6 секунд
+    let timeoutId = setTimeout(() => fadeOut(notification), 6000);
+
+    // Отмена таймера при наведении
+    notification.addEventListener('mouseenter', () => clearTimeout(timeoutId));
+    notification.addEventListener('mouseleave', () => {
+        timeoutId = setTimeout(() => fadeOut(notification), 3000);
+    });
+
+    // Закрытие по кнопке
+    notification.querySelector('.notification-close').addEventListener('click', () => {
+        clearTimeout(timeoutId);
+        fadeOut(notification);
+    });
+
+    // Лимит: максимум 5 уведомлений
+    while (container.children.length > 5) {
+        container.firstChild.remove();
+    }
+}
+
+// Вспомогательная функция плавного исчезновения
+function fadeOut(element) {
+    element.style.animation = 'notificationFadeOut 0.4s forwards';
+    setTimeout(() => {
+        if (element.parentNode) element.remove();
+    }, 400);
+}
+
+// Конкретные уведомления (обновлены под новый формат)
+function showLevelUpNotification(newLevel) {
+    showNotification('Leveled up!', { statName: 'LEVEL', statLevel: newLevel });
+}
+
+function showSkillLevelUpNotification(statName, statType, newLevel) {
+    const icons = { strength: '💪', career: '💼', willpower: '🔥', intelligence: '🧠' };
+    const icon = icons[statType] || '✨';
+    showNotification('Skill level increased!', { 
+        statName: `${icon} ${statName.toUpperCase()}`, 
+        statLevel: newLevel 
+    });
+}
+
+function showDailyQuestsCompleteNotification() {
+    showNotification('All daily quests completed!', { 
+        type: 'daily-complete',
+        icon: '✅' // fallback текстовая галочка на случай проблем с CSS
+    });
 }
 
 // === ТАЙМЕР И ЭКСПОРТ ===
