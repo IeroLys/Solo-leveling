@@ -1231,133 +1231,104 @@ body {
     transform: scale(1.1);
 }*/
 
-/* === СИСТЕМА УВЕДОМЛЕНИЙ (SOLO LEVELING — ТОЧНО ПО ТЗ) === */
+/* === СИСТЕМА УВЕДОМЛЕНИЙ (ГИБРИДНЫЙ СТИЛЬ) === */
 .notification-container {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 16px;
+    right: 16px;
     z-index: 10000;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    max-width: 360px;
-    pointer-events: none;
+    gap: 10px;
+    max-width: 340px;
 }
 
 .notification {
-    background: rgba(5, 8, 15, 0.92);
-    border: 1px solid rgba(0, 100, 150, 0.3);
-    border-radius: 8px;
-    padding: 16px;
+    background: rgba(11, 18, 32, 0.92);
+    border: 1px solid rgba(0, 180, 255, 0.35);
+    border-radius: 10px;
+    padding: 14px 16px;
     box-shadow:
-        0 0 15px rgba(0, 130, 200, 0.25),
-        0 4px 20px rgba(0, 10, 20, 0.6),
-        inset 0 0 2px rgba(0, 180, 255, 0.15);
+        0 4px 16px rgba(0, 100, 180, 0.25),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03);
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-width: 280px;
-    font-family: 'Segoe UI', 'Montserrat', sans-serif;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    animation: slideIn 0.25s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    min-width: 260px;
     position: relative;
-    overflow: hidden;
-    transform: translateX(400px) scale(0.96);
-    opacity: 0;
-    transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease;
-    pointer-events: all;
+    font-size: 0.95rem;
 }
 
-.notification.visible {
-    transform: translateX(0) scale(1);
-    opacity: 1;
-}
-
-@keyframes notificationFadeOut {
-    to { 
-        opacity: 0; 
-        transform: translateX(100px) scale(0.92);
-        filter: blur(2px);
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
 }
 
-/* ЗАГОЛОВОК: иконка + "NOTIFICATION" */
-.notification-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: relative;
-    padding-bottom: 4px;
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateX(100px) scale(0.95);
+    }
 }
 
-/* Восклицательный знак: круглая неоновая иконка */
-.notification-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background: rgba(0, 30, 50, 0.7);
-    border: 1.5px solid rgba(0, 180, 255, 0.6);
-    box-shadow: 
-        0 0 8px rgba(0, 180, 255, 0.7),
-        0 0 15px rgba(0, 150, 220, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #00e0ff;
-    font-family: 'Arial', sans-serif;
-    font-weight: bold;
-    font-size: 1.3rem;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 2;
-    text-shadow: 
-        0 0 5px #00ccff,
-        0 0 10px #00ccff,
-        0 0 15px #00ccff;
+.notification-content {
+    flex: 1;
+    min-width: 0;
 }
 
-/* Текст "NOTIFICATION" — неоновый, с обводкой и свечением */
 .notification-title {
-    font-family: 'Orbitron', 'Bebas Neue', monospace;
-    font-size: 1.15rem;
-    font-weight: 800;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: transparent;
-    background: linear-gradient(90deg, #00a2ff, #00f0ff, #00a2ff);
-    background-clip: text;
-    -webkit-background-clip: text;
-    text-shadow: 
-        0 0 6px rgba(0, 180, 255, 0.7),
-        0 0 12px rgba(0, 150, 220, 0.6),
-        0 0 20px rgba(0, 120, 200, 0.5);
-    position: relative;
-    margin: 0;
-    white-space: nowrap;
-}
-
-/* Основное сообщение — тонкий, без свечения */
-.notification-message {
+    font-family: 'Orbitron', sans-serif;
     font-size: 1.05rem;
-    font-weight: 300;
-    color: #e6f7ff;
-    line-height: 1.45;
-    margin: 0;
-    letter-spacing: -0.02em;
-    padding-left: 4px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
 }
 
-/* ДЕТАЛИ: стат + уровень в рамке с неоновым разделением */
+/* Цвета заголовков — как в Версии 1 */
+.notification-title.level-up {
+    color: #ffd700;
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+}
+.notification-title.skill-up {
+    color: #00ccff;
+    text-shadow: 0 0 6px rgba(0, 204, 255, 0.4);
+}
+.notification-title.success {
+    color: #4dff4d;
+    text-shadow: 0 0 6px rgba(77, 255, 77, 0.4);
+}
+
+.notification-message {
+    font-size: 0.92rem;
+    color: #e0f7ff;
+    margin: 0 0 6px 0;
+    line-height: 1.35;
+    font-weight: 500;
+}
+
+/* === БЛОК ДЕТАЛЕЙ (как в Версии 2) === */
 .notification-detail {
     font-family: 'Orbitron', monospace;
     font-size: 0.88rem;
     font-weight: 700;
-    margin: 4px 0 0 0;
+    margin: 0;
     padding: 6px 12px;
     background: rgba(0, 20, 35, 0.65);
-    border: 1px solid rgba(0, 130, 190, 0.45);
+    /*border: 1px solid rgba(0, 130, 190, 0.45);*/
+    border: 1px solid #00ccff;
     border-radius: 6px;
-    box-shadow: 
+    /*box-shadow: 
         0 0 6px rgba(0, 140, 200, 0.3),
-        inset 0 0 4px rgba(0, 100, 160, 0.2);
+        inset 0 0 4px rgba(0, 100, 160, 0.2);*/
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1365,37 +1336,26 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Только для уведомлений — не влияет на основные статы */
 .notification-detail .notif-stat-name {
     color: #00e5ff;
-    text-shadow: 
-        0 0 4px rgba(0, 190, 255, 0.6),
-        0 0 8px rgba(0, 170, 240, 0.5);
     white-space: nowrap;
-    font-size: 0.80rem; /* ← именно здесь уменьшаешь */
+    font-size: 0.80rem;
     letter-spacing: 0.4px;
 }
 
 .notification-detail .notif-stat-level {
     color: #ffd700;
-    text-shadow: 
-        0 0 5px rgba(255, 215, 0, 0.7),
-        0 0 10px rgba(255, 200, 0, 0.6);
     font-weight: 800;
     min-width: 45px;
     text-align: right;
     font-size: 0.88rem;
 }
 
-
-/* Кнопка закрытия — минималистичная, с акцентом при наведении */
+/* Кнопка закрытия */
 .notification-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(10, 25, 40, 0.6);
-    border: 1px solid rgba(100, 150, 200, 0.3);
-    color: #88aaff;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #aaa;
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -1403,119 +1363,61 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: bold;
-    transition: all 0.25s ease;
-    padding: 0;
-    opacity: 0.85;
-    z-index: 10;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 2px;
 }
 
 .notification-close:hover {
-    background: rgba(0, 40, 70, 0.9);
-    border-color: #00aaff;
-    color: #fff;
-    opacity: 1;
-    transform: scale(1.15) rotate(90deg);
-    box-shadow: 0 0 8px rgba(0, 170, 255, 0.6);
+    background: rgba(255, 80, 80, 0.25);
+    color: #ff5050;
+    transform: scale(1.1);
 }
 
-/* === АДАПТИВНОСТЬ — КОМПАКТНЫЕ УВЕДОМЛЕНИЯ ДЛЯ МОБИЛЫ === */
+/* === АДАПТИВНОСТЬ === */
 @media (max-width: 480px) {
-  .notification-container {
-    top: 12px;
-    right: 12px;
-    left: 12px; /* ← чтобы не вылезало за край на очень узких экранах */
-    max-width: calc(100% - 24px);
-    gap: 8px;
-  }
+    .notification-container {
+        top: 12px;
+        right: 12px;
+        max-width: 90%;
+    }
 
-  .notification {
-    min-width: auto;
-    width: 100%;
-    max-width: 300px;
-    padding: 10px 12px; /* ← меньше паддинг */
-    gap: 6px; /* ← меньше расстояние между элементами */
-    border-radius: 6px; /* ← чуть скромнее */
-  }
+    .notification {
+        min-width: auto;
+        width: 100%;
+        max-width: 290px;
+        padding: 12px 14px;
+        font-size: 0.9rem;
+        gap: 10px;
+    }
 
-  .notification-header {
-    gap: 6px;
-    padding-bottom: 2px;
-  }
+    .notification-title {
+        font-size: 1rem;
+        margin-bottom: 3px;
+    }
 
-  .notification-icon {
-    width: 22px;
-    height: 22px;
-    font-size: 1.1rem;
-    box-shadow:
-      0 0 5px rgba(0, 180, 255, 0.6),
-      0 0 10px rgba(0, 150, 220, 0.4);
-  }
+    .notification-message {
+        font-size: 0.88rem;
+        margin-bottom: 4px;
+    }
 
-  .notification-title {
-    font-size: 1rem;
-    letter-spacing: 0.8px;
-    text-shadow:
-      0 0 4px rgba(0, 180, 255, 0.6),
-      0 0 8px rgba(0, 150, 220, 0.5);
-  }
+    .notification-detail {
+        font-size: 0.78rem;
+        padding: 4px 8px;
+        gap: 8px;
+        border-radius: 5px;
+    }
 
-  .notification-message {
-    font-size: 0.92rem;
-    line-height: 1.35;
-    padding-left: 0;
-    margin-top: 2px;
-  }
+    .notification-detail .notif-stat-name,
+    .notification-detail .notif-stat-level {
+        font-size: 0.78rem;
+    }
 
-  .notification-detail {
-    font-size: 0.78rem; /* ← ключевое уменьшение */
-    padding: 4px 8px;
-    gap: 8px;
-    border-radius: 5px;
-    margin: 2px 0 0 0;
-  }
-
-  /*.notification-detail .checkmark-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    background: transparent;
-    border: 2px solid #00ccff;
-    border-radius: 3px;
-    color: #00ccff;
-    font-size: 0.75rem;
-    font-weight: bold;
-    text-shadow: 0 0 4px rgba(0, 200, 255, 0.6);
-    line-height: 1;
-}*/
-}
-/* === УВЕДОМЛЕНИЕ: ЗАВЕРШЕНИЕ ДЕЙЛИКОВ — ПРОСТОЙ ЭМОДЗИ === */
-.notification-detail.daily-complete {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 8px 0 0 0;
-    font-size: 1.0rem !important; /* Крупный, но не огромный */
-    color: #00ccff; /* Голубой как в стиле Solo Leveling */
-    text-shadow:
-        0 0 8px rgba(0, 200, 255, 0.8),
-        0 0 15px rgba(0, 180, 255, 0.6),
-        0 0 25px rgba(0, 150, 220, 0.4);
-    line-height: 1;
-    padding: 0 !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    min-height: auto;
-}
-
-/* Адаптив: чуть меньше на мобильных */
-@media (max-width: 480px) {
-    .notification-detail.daily-complete {
-        font-size: 2.0rem;
-        margin: 6px 0 0 0;
+    .notification-close {
+        width: 20px;
+        height: 20px;
+        font-size: 0.8rem;
     }
 }

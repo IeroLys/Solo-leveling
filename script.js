@@ -1191,45 +1191,34 @@ function showDailyQuestsCompleteNotification() {
     showNotification('success', '🎯 Daily Quests Complete!', 'Все ежедневные квесты на сегодня завершены!');
 }*/
 
-// === СИСТЕМА УВЕДОМЛЕНИЙ (SOLO LEVELING STYLE) ===
-function showNotification(message, detail = null) {
+// === СИСТЕМА УВЕДОМЛЕНИЙ (ГИБРИДНЫЙ СТИЛЬ) ===
+function showNotification(type, title, message, detail = null) {
     const container = document.getElementById('notification-container');
     if (!container) return;
 
     const notification = document.createElement('div');
     notification.className = 'notification';
+    notification.dataset.type = type;
 
-    // Формируем блок деталей: поддержка строки или объекта {statName, statLevel}
-    // Формируем блок деталей: поддержка строки или объекта {statName, statLevel}
+    // Формируем блок деталей (только для level-up и skill-up)
     let detailBlock = '';
-        if (detail) {
-            if (detail.type === 'daily-complete') {
-                // Просто эмодзи в контейнере
-                detailBlock = `<div class="notification-detail daily-complete">${detail.icon || '✅'}</div>`;
-            } else if (typeof detail === 'string') {
-                detailBlock = `<p class="notification-detail">${detail}</p>`;
-            } else {
-                detailBlock = `<div class="notification-detail">
-                    <span class="notif-stat-name">${detail.statName}</span>
-                    <span class="notif-stat-level">Lvl ${detail.statLevel}</span>
-                </div>`;
-            }
-        }
+    if (detail) {
+        detailBlock = `<div class="notification-detail">
+            <span class="notif-stat-name">${detail.statName}</span>
+            <span class="notif-stat-level">Lvl ${detail.statLevel}</span>
+        </div>`;
+    }
 
     notification.innerHTML = `
-        <div class="notification-header">
-            <div class="notification-icon">!</div>
-            <h4 class="notification-title">NOTIFICATION</h4>
+        <div class="notification-content">
+            <h4 class="notification-title ${type}">${title}</h4>
+            <p class="notification-message">${message}</p>
+            ${detailBlock}
         </div>
-        <p class="notification-message">${message}</p>
-        ${detailBlock}
         <button class="notification-close" aria-label="Dismiss">×</button>
     `;
 
     container.appendChild(notification);
-
-    // Анимация появления
-    setTimeout(() => notification.classList.add('visible'), 10);
 
     // Авто-скрытие через 6 секунд
     let timeoutId = setTimeout(() => fadeOut(notification), 6000);
@@ -1252,33 +1241,41 @@ function showNotification(message, detail = null) {
     }
 }
 
-// Вспомогательная функция плавного исчезновения
 function fadeOut(element) {
-    element.style.animation = 'notificationFadeOut 0.4s forwards';
+    element.style.animation = 'fadeOut 0.4s forwards';
     setTimeout(() => {
         if (element.parentNode) element.remove();
     }, 400);
 }
 
-// Конкретные уведомления (обновлены под новый формат)
+// Конкретные уведомления
 function showLevelUpNotification(newLevel) {
-    showNotification('Leveled up!', { statName: 'LEVEL', statLevel: newLevel });
+    showNotification(
+        'level-up',
+        'Leveled up!',
+        '',
+        { statName: 'LEVEL', statLevel: newLevel }
+    );
 }
 
 function showSkillLevelUpNotification(statName, statType, newLevel) {
-    const icons = { strength: '💪', career: '💼', willpower: '🔥', intelligence: '🧠' };
+    const icons = { strength: '💪', career: '💼', willpower: '🔥' };
     const icon = icons[statType] || '✨';
-    showNotification('Skill level increased!', { 
-        statName: `${icon} ${statName.toUpperCase()}`, 
-        statLevel: newLevel 
-    });
+    showNotification(
+        'skill-up',
+        'Skill level increased!',
+        '',
+        { statName: `${icon} ${statName.toUpperCase()}`, statLevel: newLevel }
+    );
 }
 
 function showDailyQuestsCompleteNotification() {
-    showNotification('All daily quests completed!', { 
-        type: 'daily-complete',
-        icon: '✅' // fallback текстовая галочка на случай проблем с CSS
-    });
+    // Без detail → как в Версии 1
+    showNotification(
+        'success',
+        '🎯 Daily Quests Complete!',
+        'All daily quests completed!'
+    );
 }
 
 // === ТАЙМЕР И ЭКСПОРТ ===
