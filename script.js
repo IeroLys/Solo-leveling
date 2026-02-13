@@ -167,6 +167,14 @@ function loadUserData() {
         console.error("Ошибка загрузки: ", e);
     }
     renderUI();
+
+    // Устанавливаем начальный ранг в data-атрибут для отслеживания изменений
+    const initialLevel = getLevelFromTotalXP(userData.totalXP).level;
+    const initialRank = getRankByLevel(initialLevel);
+    const rankElement = document.getElementById('rank');
+    if (rankElement) {
+        rankElement.dataset.currentRank = initialRank.rank;
+    }
 }
 
 function saveUserData() {
@@ -379,10 +387,83 @@ function toggleTodo(index) {
     renderUI();
 }
 
+// === СИСТЕМА РАНГОВ ===
+const RANKS = [
+    { minLevel: 0, rank: 'E', colorClass: 'rank-E' },
+    { minLevel: 20, rank: 'D', colorClass: 'rank-D' },
+    { minLevel: 40, rank: 'C', colorClass: 'rank-C' },
+    { minLevel: 60, rank: 'B', colorClass: 'rank-B' },
+    { minLevel: 80, rank: 'A', colorClass: 'rank-A' },
+    { minLevel: 100, rank: 'S', colorClass: 'rank-S' }
+];
+
+function getRankByLevel(level) {
+    // Находим первый ранг, для которого уровень >= minLevel (в обратном порядке)
+    for (let i = RANKS.length - 1; i >= 0; i--) {
+        if (level >= RANKS[i].minLevel) {
+            return RANKS[i];
+        }
+    }
+    return RANKS[0]; // E по умолчанию
+}
+
+function showRankUpNotification(oldRank, newRank) {
+    if (oldRank.rank === newRank.rank) return;
+    
+    const rankNames = {
+        'E': 'E Rank',
+        'D': 'D Rank',
+        'C': 'C Rank',
+        'B': 'B Rank',
+        'A': 'A Rank',
+        'S': 'S Rank'
+    };
+    
+    showNotification(
+        'success',
+        '🏆 Rank Up!',
+        `Promoted from ${rankNames[oldRank.rank]} to ${rankNames[newRank.rank]}!`,
+        { 
+            statName: `RANK ${newRank.rank}`, 
+            statLevel: '' 
+        }
+    );
+    
+    // Анимация для элемента ранга
+    const rankElement = document.getElementById('rank');
+    if (rankElement) {
+        rankElement.classList.add('rank-up-animation');
+        setTimeout(() => {
+            rankElement.classList.remove('rank-up-animation');
+        }, 500);
+    }
+}
+
 // === ОТОБРАЖЕНИЕ ===
 function renderUI() {
     const main = getLevelFromTotalXP(userData.totalXP);
     document.getElementById('level').textContent = main.level;
+    
+    // === ДОБАВИТЬ ЭТОТ БЛОК ===
+    const currentRank = getRankByLevel(main.level);
+    const rankElement = document.getElementById('rank');
+    
+    if (rankElement) {
+        // Сохраняем предыдущий ранг для анимации уведомления
+        const prevRankClass = rankElement.dataset.currentRank || 'E';
+        const prevRank = RANKS.find(r => r.rank === prevRankClass) || RANKS[0];
+        
+        // Обновляем отображение
+        rankElement.textContent = currentRank.rank;
+        rankElement.className = 'rank-value ' + currentRank.colorClass;
+        rankElement.dataset.currentRank = currentRank.rank;
+        
+        // Показываем уведомление при повышении ранга
+        if (prevRank.rank !== currentRank.rank && prevRank.minLevel < currentRank.minLevel) {
+            showRankUpNotification(prevRank, currentRank);
+        }
+    }
+    
     document.getElementById('current-xp').textContent = main.currentXP;
     document.getElementById('max-xp').textContent = main.maxXP;
     document.getElementById('xp-progress').style.width = `${Math.min(100, (main.currentXP / main.maxXP) * 100)}%`;
@@ -396,7 +477,7 @@ function renderUI() {
             document.getElementById(`${key}-xp`).textContent = '0/100 XP';
             return;
         }
-        const statData = getLevelFromTotalXP(stat.totalXP);
+        const statData = getLevelFromTotalXP(stat.totalXP, true);
         const percent = statData.maxXP > 0 ? (statData.currentXP / statData.maxXP) * 100 : 0;
         document.getElementById(`${key}-progress`).style.width = `${Math.min(100, percent)}%`;
         document.getElementById(`${key}-level`).textContent = statData.level;
