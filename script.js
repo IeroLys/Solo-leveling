@@ -59,6 +59,33 @@ function getLevelFromTotalXP(totalXP, isStat = false) {
     return { level, currentXP, maxXP };
 }
 
+// Возвращает информацию о текущем и следующем ранге
+function getRankProgressInfo(currentLevel) {
+  const currentRank = getRankByLevel(currentLevel);
+  
+  // Найти следующий ранг (если есть)
+  const currentIndex = RANKS.findIndex(r => r.rank === currentRank.rank);
+  const nextRank = currentIndex < RANKS.length - 1 ? RANKS[currentIndex + 1] : null;
+  
+  if (!nextRank) {
+    return {
+      currentRank,
+      nextRank: null,
+      levelsToNext: 0,
+      isMaxRank: true
+    };
+  }
+  
+  const levelsToNext = nextRank.minLevel - currentLevel;
+  
+  return {
+    currentRank,
+    nextRank,
+    levelsToNext,
+    isMaxRank: false
+  };
+}
+
 function cleanExpiredBoosts() {
     const now = new Date();
     userData.boosts = userData.boosts.filter(boost => new Date(boost.expiresAt) > now);

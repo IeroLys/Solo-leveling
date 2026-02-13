@@ -204,42 +204,61 @@ body {
 
 /* === СИСТЕМА РАНГОВ === */
 .level-display {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 12px;
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 6px 0;
 }
 
+.level-badge-container,
 .rank-badge-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
 }
 
+.level-label,
 .rank-label {
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 2px;
-    font-weight: 600;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2px;
+  font-weight: 600;
 }
 
+/* Стиль уровня — теперь как у ранга */
+.level-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 8px;
+  min-width: 40px;
+  text-align: center;
+  background: rgba(0, 170, 255, 0.15);
+  border: 1px solid rgba(0, 170, 255, 0.3);
+  color: #00ccff;
+  box-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+/* Ранг остаётся как был, но чуть подправлено позиционирование */
 .rank-value {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.8rem;
-    font-weight: bold;
-    padding: 2px 8px;
-    border-radius: 8px;
-    min-width: 40px;
-    text-align: center;
-    position: relative;
-    letter-spacing: 1px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 8px;
+  min-width: 40px;
+  text-align: center;
+  position: relative;
+  letter-spacing: 1px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
 }
 
 /* Цвета рангов */
@@ -283,10 +302,33 @@ body {
     50% { box-shadow: 0 0 15px rgba(200, 140, 255, 0.8), 0 0 25px rgba(200, 140, 255, 0.5); }
 }
 
+/* Разделитель между LVL и RANK */
+.rank-separator {
+  color: rgba(0, 180, 255, 0.4);
+  font-size: 1.4rem;
+  line-height: 1;
+  user-select: none;
+  margin-top: 4px;
+}
+
 /* Анимация при повышении ранга */
 .rank-up-animation {
     animation: rankUp 0.5s ease;
     transform-origin: center;
+}
+
+.rank-progress-text {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.rank-progress-text strong {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
 }
 
 @keyframes rankUp {
@@ -295,19 +337,21 @@ body {
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* Адаптивность для рангов */
+/* Адаптивность */
 @media (max-width: 420px) {
-    .level-display {
-        gap: 10px;
-    }
-    .rank-value {
-        font-size: 1.5rem;
-        padding: 1px 6px;
-        min-width: 35px;
-    }
-    .rank-label {
-        font-size: 0.6rem;
-    }
+  .level-display {
+    gap: 8px;
+  }
+  .level-value,
+  .rank-value {
+    font-size: 1.5rem;
+    padding: 1px 6px;
+    min-width: 35px;
+  }
+  .rank-separator {
+    font-size: 1.2rem;
+    margin-top: 2px;
+  }
 }
 
 /* === СТАТЫ === */
