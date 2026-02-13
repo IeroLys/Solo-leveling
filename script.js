@@ -20,6 +20,9 @@ const XP_BASE = 130;
 const XP_GROWTH_RATE = 1.05;
 const MAX_BOOST_PERCENT = 100; // Максимальный суммарный буст
 
+const STAT_XP_BASE = 80;
+const STAT_XP_GROWTH_RATE = 1.04;
+
 // === НАСТРОЙКИ СЛОЖНОСТИ ===
 const DIFFICULTY_CONFIG = {
     1: { xp: 30, label: 'Оч. лёгкая', color: '#4da6ff', boost: 5 },
@@ -34,24 +37,26 @@ function generateId(prefix = 'id') {
     return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-function xpRequiredForLevel(level) {
+function xpRequiredForLevel(level, isStat = false) {
     if (level <= 1) return 0;
+    const base = isStat ? STAT_XP_BASE : XP_BASE;
+    const rate = isStat ? STAT_XP_GROWTH_RATE : XP_GROWTH_RATE;
     let total = 0;
     for (let i = 1; i < level; i++) {
-        total += Math.round(XP_BASE * Math.pow(XP_GROWTH_RATE, i - 1));
+        total += Math.round(base * Math.pow(rate, i - 1));
     }
     return total;
 }
 
-function getLevelFromTotalXP(totalXP) {
+function getLevelFromTotalXP(totalXP, isStat = false) {
     if (totalXP < 0) totalXP = 0;
     let level = 1;
-    while (xpRequiredForLevel(level + 1) <= totalXP) {
+    while (xpRequiredForLevel(level + 1, isStat) <= totalXP) {
         level++;
     }
-    const currentXP = totalXP - xpRequiredForLevel(level);
-    const nextLevelXP = xpRequiredForLevel(level + 1) - xpRequiredForLevel(level);
-    return { level, currentXP, maxXP: nextLevelXP };
+    const currentXP = totalXP - xpRequiredForLevel(level, isStat);
+    const maxXP = xpRequiredForLevel(level + 1, isStat) - xpRequiredForLevel(level, isStat);
+    return { level, currentXP, maxXP };
 }
 
 function cleanExpiredBoosts() {
@@ -78,7 +83,8 @@ function loadUserData() {
             const statKeys = ['strength', 'career', 'willpower'];
             statKeys.forEach(key => {
                 if (parsed.stats && typeof parsed.stats[key] === 'number') {
-                    parsed.stats[key] = { totalXP: xpRequiredForLevel(parsed.stats[key] || 1) };
+                    // ↓↓↓ ДОБАВЬТЕ `, true` ↓↓↓
+                    parsed.stats[key] = { totalXP: xpRequiredForLevel(parsed.stats[key] || 1, true) };
                 } else if (!parsed.stats?.[key]) {
                     if (!parsed.stats) parsed.stats = {};
                     parsed.stats[key] = { totalXP: 0 };
@@ -171,18 +177,6 @@ function saveUserData() {
         alert("Не удалось сохранить данные.");
     }
 }
-
-// === XP СИСТЕМА ===
-/*function addXP(amount, statTypes = []) {
-    userData.totalXP += amount;
-    statTypes.forEach(statType => {
-        if (userData.stats[statType]) {
-            userData.stats[statType].totalXP += amount;
-        }
-    });
-    saveUserData();
-    renderUI();
-}*/
 
 function addXP(amount, statTypes = []) {
 const oldMainLevel = getLevelFromTotalXP(userData.totalXP).level;
