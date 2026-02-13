@@ -474,6 +474,60 @@ function renderUI() {
     // === ДОБАВИТЬ ЭТОТ БЛОК ===
     const currentRank = getRankByLevel(main.level);
     const rankElement = document.getElementById('rank');
+
+    // === ПРОГРЕСС ДО СЛЕДУЮЩЕГО РАНГА ===
+const rankProgress = getRankProgressInfo(main.level);
+const rankProgressLabel = document.getElementById('rank-progress-label');
+const rankProgressFill = document.getElementById('rank-progress-fill');
+
+if (rankProgressLabel && rankProgressFill) {
+  if (rankProgress.isMaxRank) {
+    rankProgressLabel.textContent = 'Макс. ранг!';
+    rankProgressLabel.style.color = '#c88cff';
+    rankProgressFill.style.width = '100%';
+  } else {
+    const levels = rankProgress.levelsToNext;
+    const nextRank = rankProgress.nextRank.rank;
+    rankProgressLabel.innerHTML = `+${levels} LVL → <strong>${nextRank}</strong>`;
+    
+    // Цвет текста — как у следующего ранга
+    const colorMap = {
+      'E': '#4da6ff',
+      'D': '#4dff4d',
+      'C': '#ffd166',
+      'B': '#ff9e66',
+      'A': '#ff4d4d',
+      'S': '#c88cff'
+    };
+    rankProgressLabel.style.color = colorMap[nextRank] || '#00ccff';
+
+    // Расчёт прогресса: сколько уровней пройдено от текущего ранга
+    const currentRankMin = rankProgress.currentRank.minLevel;
+    const nextRankMin = rankProgress.nextRank.minLevel;
+    const totalLevelsInTier = nextRankMin - currentRankMin;
+    const levelsCompletedInTier = main.level - currentRankMin;
+    const progressPercent = Math.max(0, Math.min(100, (levelsCompletedInTier / totalLevelsInTier) * 100));
+
+    rankProgressFill.style.width = `${progressPercent}%`;
+
+// Устанавливаем градиент под цвет следующего ранга
+if (!rankProgress.isMaxRank) {
+  const nextRank = rankProgress.nextRank.rank;
+  const gradientMap = {
+    'E': 'linear-gradient(90deg, #4da6ff, #7dcfff)',
+    'D': 'linear-gradient(90deg, #4dff4d, #85ff85)',
+    'C': 'linear-gradient(90deg, #ffd166, #ffe08a)',
+    'B': 'linear-gradient(90deg, #ff9e66, #ffb38f)',
+    'A': 'linear-gradient(90deg, #ff4d4d, #ff7a7a)',
+    'S': 'linear-gradient(90deg, #c88cff, #e0b3ff)'
+  };
+  rankProgressFill.style.background = gradientMap[nextRank] || 'linear-gradient(90deg, #ffaa00, #ffd700)';
+} else {
+  // Для S-ранга — фиолетовый градиент
+  rankProgressFill.style.background = 'linear-gradient(90deg, #c88cff, #e0b3ff)';
+}
+  }
+}
     
     if (rankElement) {
         // Сохраняем предыдущий ранг для анимации уведомления

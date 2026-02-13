@@ -317,19 +317,44 @@ body {
     transform-origin: center;
 }
 
+.rank-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
 .rank-progress-text {
   text-align: center;
-  margin-top: 8px;
   font-size: 0.85rem;
   opacity: 0.85;
   font-weight: 600;
   letter-spacing: 0.5px;
+  min-height: 1.2em; /* чтобы не прыгало при обновлении */
 }
 
 .rank-progress-text strong {
   font-family: 'Orbitron', sans-serif;
   letter-spacing: 1px;
 }
+
+.rank-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rank-progress-fill {
+  height: 100%;
+  transition: width 0.4s ease, background 0.4s ease;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ffaa00, #ffd700); /* fallback на случай, если JS не сработал */
+}
+
+
 
 @keyframes rankUp {
     0% { transform: scale(1); }
