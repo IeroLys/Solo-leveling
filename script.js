@@ -1019,106 +1019,6 @@ function handleMiscDifficultyClick(event) {
     }
 }
 
-// === СИСТЕМА УВЕДОМЛЕНИЙ ===
-/*
-function showNotification(type, title, message) {
-    const container = document.getElementById('notification-container');
-    if (!container) {
-        console.error('[NOTIFICATION] Container not found!');
-        return;
-    }
-
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    const notificationId = `notif-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-    notification.dataset.notificationId = notificationId;
-    
-    notification.innerHTML = `
-        <div class="notification-content">
-            <h4 class="notification-title ${type}">${title}</h4>
-            <p class="notification-message">${message}</p>
-        </div>
-        <button class="notification-close" aria-label="Закрыть уведомление">×</button>
-    `;
-    
-    container.appendChild(notification);
-    console.log(`[NOTIFICATION] ${title} | ${message}`);
-    
-    // Авто-скрытие через 6 секунд
-    let timeoutId = setTimeout(() => {
-        fadeOutNotification(notification, notificationId);
-    }, 6000);
-    notification._timeoutId = timeoutId;
-    
-    // Обработчики кнопки и наведения
-    const closeBtn = notification.querySelector('.notification-close');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            clearTimeout(notification._timeoutId);
-            fadeOutNotification(notification, notificationId);
-        });
-        
-        notification.addEventListener('mouseenter', () => {
-            clearTimeout(notification._timeoutId);
-        });
-        
-        notification.addEventListener('mouseleave', () => {
-            notification._timeoutId = setTimeout(() => {
-                fadeOutNotification(notification, notificationId);
-            }, 3000);
-        });
-    }
-    
-    // Лимит уведомлений
-    const maxNotifications = 5;
-    while (container.children.length > maxNotifications) {
-        container.firstChild.remove();
-    }
-}
-
-function fadeOutNotification(notification, id) {
-    notification.style.animation = 'fadeOut 0.5s ease forwards';
-    setTimeout(() => {
-        if (notification.parentNode) notification.remove();
-    }, 500);
-}
-
-function showLevelUpNotification(newLevel) {
-    console.log(`[LEVEL UP] Достигнут уровень ${newLevel}`);
-    showNotification(
-        'level-up',
-        'Leveled up!',
-        `Lvl ${newLevel}`
-    );
-}
-
-function showSkillLevelUpNotification(statName, statType, newLevel) {
-    console.log(`[SKILL UP] ${statName} достиг ${newLevel} уровня`);
-    
-    const statIcons = {
-        strength: '💪',
-        career: '💸',
-        willpower: '🔥'
-    };
-    const icon = statIcons[statType] || '✨';
-    
-    showNotification(
-        'skill-up',
-        'Skill Level increased!',
-        `${icon} ${statName} Lvl ${newLevel}`
-    );
-}
-
-function showDailyQuestsCompleteNotification() {
-    console.log('[DAILY QUESTS] Все квесты завершены');
-    showNotification(
-        'success',
-        '🎯 Daily Quests Complete!',
-        'Все ежедневные квесты на сегодня завершены!'
-    );
-}
-*/
-/*
 function showNotification(type, title, message) {
     const container = document.getElementById('notification-container');
     if (!container) {
@@ -1189,7 +1089,7 @@ function showSkillLevelUpNotification(statName, statType, newLevel) {
 function showDailyQuestsCompleteNotification() {
     console.log('[DAILY QUESTS] All completed');
     showNotification('success', '🎯 Daily Quests Complete!', 'Все ежедневные квесты на сегодня завершены!');
-}*/
+}
 
 // === СИСТЕМА УВЕДОМЛЕНИЙ (ГИБРИДНЫЙ СТИЛЬ) ===
 function showNotification(type, title, message, detail = null) {
@@ -1259,7 +1159,7 @@ function showLevelUpNotification(newLevel) {
 }
 
 function showSkillLevelUpNotification(statName, statType, newLevel) {
-    const icons = { strength: '💪', career: '💼', willpower: '🔥' };
+    const icons = { strength: '💪', career: '💸', willpower: '🔥' };
     const icon = icons[statType] || '✨';
     showNotification(
         'skill-up',
