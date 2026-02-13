@@ -1244,13 +1244,18 @@ body {
 }
 
 .notification {
-    background: rgba(11, 18, 32, 0.92);
-    border: 1px solid rgba(0, 180, 255, 0.35);
+    background: rgba(10, 15, 25, 0.85);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(0, 120, 180, 0.4);
     border-radius: 10px;
     padding: 14px 16px;
     box-shadow:
-        0 4px 16px rgba(0, 100, 180, 0.25),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        /* Основная тень — глубже и ярче */
+        0 8px 32px rgba(0, 40, 80, 0.75),
+        /* Неоновая подсветка — чуть ярче */
+        0 0 18px rgba(0, 150, 220, 0.55),
+        /* Внутренний акцент — как раньше */
+        inset 0 0 2px rgba(0, 180, 255, 0.1);
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -1323,12 +1328,11 @@ body {
     margin: 0;
     padding: 6px 12px;
     background: rgba(0, 20, 35, 0.65);
-    /*border: 1px solid rgba(0, 130, 190, 0.45);*/
-    border: 1px solid #00ccff;
+    border: 1px solid rgba(0, 130, 190, 0.45);
     border-radius: 6px;
-    /*box-shadow: 
+    box-shadow: 
         0 0 6px rgba(0, 140, 200, 0.3),
-        inset 0 0 4px rgba(0, 100, 160, 0.2);*/
+        inset 0 0 4px rgba(0, 100, 160, 0.2);
     display: flex;
     justify-content: space-between;
     align-items: center;
