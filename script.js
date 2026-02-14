@@ -1174,78 +1174,6 @@ function handleMiscDifficultyClick(event) {
     }
 }
 
-function showNotification(type, title, message) {
-    const container = document.getElementById('notification-container');
-    if (!container) {
-        console.warn('[NOTIFICATION] Container not found');
-        return;
-    }
-
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.dataset.type = type;
-
-    notification.innerHTML = `
-        <div class="notification-content">
-            <h4 class="notification-title ${type}">${title}</h4>
-            <p class="notification-message">${message}</p>
-        </div>
-        <button class="notification-close" aria-label="Закрыть">×</button>
-    `;
-
-    container.appendChild(notification);
-
-    // Авто-скрытие через 6 секунд
-    let timeoutId = setTimeout(() => {
-        notification.style.animation = 'fadeOut 0.4s forwards';
-        setTimeout(() => {
-            if (notification.parentNode) notification.remove();
-        }, 400);
-    }, 6000);
-
-    // Отмена таймера при наведении
-    notification.addEventListener('mouseenter', () => clearTimeout(timeoutId));
-    notification.addEventListener('mouseleave', () => {
-        timeoutId = setTimeout(() => {
-            notification.style.animation = 'fadeOut 0.4s forwards';
-            setTimeout(() => {
-                if (notification.parentNode) notification.remove();
-            }, 400);
-        }, 3000);
-    });
-
-    // Закрытие по кнопке
-    notification.querySelector('.notification-close').addEventListener('click', () => {
-        clearTimeout(timeoutId);
-        notification.style.animation = 'fadeOut 0.4s forwards';
-        setTimeout(() => {
-            if (notification.parentNode) notification.remove();
-        }, 400);
-    });
-
-    // Лимит уведомлений
-    if (container.children.length > 5) {
-        container.firstChild.remove();
-    }
-}
-
-function showLevelUpNotification(newLevel) {
-    console.log(`[LEVEL UP] Lvl ${newLevel}`);
-    showNotification('level-up', 'Leveled up!', `Lvl ${newLevel}`);
-}
-
-function showSkillLevelUpNotification(statName, statType, newLevel) {
-    console.log(`[SKILL UP] ${statName} → Lvl ${newLevel}`);
-    const icons = { strength: '💪', career: '💸', willpower: '🔥' };
-    const icon = icons[statType] || '✨';
-    showNotification('skill-up', 'Skill Level increased!', `${icon} ${statName}, Lvl ${newLevel}`);
-}
-
-function showDailyQuestsCompleteNotification() {
-    console.log('[DAILY QUESTS] All completed');
-    showNotification('success', '🎯 Daily Quests Complete!', 'Все ежедневные квесты на сегодня завершены!');
-}
-
 // === СИСТЕМА УВЕДОМЛЕНИЙ (ГИБРИДНЫЙ СТИЛЬ) ===
 function showNotification(type, title, message, detail = null) {
     const container = document.getElementById('notification-container');
@@ -1303,7 +1231,6 @@ function fadeOut(element) {
     }, 400);
 }
 
-// Конкретные уведомления
 function showLevelUpNotification(newLevel) {
     showNotification(
         'level-up',
@@ -1420,6 +1347,35 @@ function resetAllData() {
 
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', () => {
+    // Переключение вкладок
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Обновляем активную вкладку в навигации
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Показываем нужный контент
+        const tabId = tab.getAttribute('data-tab');
+        document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+        });
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        
+        // Сохраняем текущую вкладку
+        localStorage.setItem('activeTab', tabId);
+    });
+    });
+
+    // Восстанавливаем последнюю активную вкладку при загрузке
+    document.addEventListener('DOMContentLoaded', () => {
+    const savedTab = localStorage.getItem('activeTab') || 'main';
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        if (tab.getAttribute('data-tab') === savedTab) {
+        tab.click(); // Триггерим клик для корректной инициализации
+        }
+    });
+    });
+    
     // Daily quest modal handlers
     document.getElementById('add-todo-btn').addEventListener('click', openAddModal);
     document.getElementById('save-edit-btn').addEventListener('click', saveEdit);
