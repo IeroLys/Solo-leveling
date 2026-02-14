@@ -721,52 +721,55 @@ function renderMiscList() {
 }
 
 function renderMissionList() {
-  const container = document.getElementById('missions-container');
-  if (!container) return;
-  
-  // Фильтруем только невыполненные миссии (выполненные остаются в истории)
-  const activeMissions = userData.missions.filter(m => !m.completed);
-  
-  if (activeMissions.length === 0) {
-    container.innerHTML = `
-      <div class="empty-missions">
-        <div class="empty-icon">🗺️</div>
-        <p>Нет активных миссий</p>
-        <small>Создайте первую миссию, чтобы начать путь героя!</small>
-      </div>
-    `;
-    return;
-  }
-  
-  container.innerHTML = '';
-  
-  activeMissions.forEach((mission, idx) => {
-    // Найти оригинальный индекс в массиве (для корректной работы функций)
-    const originalIndex = userData.missions.findIndex(m => m.id === mission.id);
-    const config = MISSION_CONFIG[mission.scale] || MISSION_CONFIG.small;
+    const container = document.getElementById('missions-container');
+    if (!container) return;
     
-    const missionElement = document.createElement('div');
-    missionElement.className = `mission-item`;
-    missionElement.innerHTML = `
-      <input type="checkbox" onchange="toggleMission(${originalIndex})">
-      <div class="mission-content">
-        <div class="mission-header">
-          <div class="mission-title">${escapeHtml(mission.title)}</div>
-          <div class="mission-scale" style="background-color: ${config.color}15; border-color: ${config.color}60; color: ${config.color}">
-            ${config.icon} ${config.label}
-          </div>
-        </div>
-        <div class="mission-meta">
-          <span class="mission-xp">${config.xp} XP</span>
-        </div>
-      </div>
-      <div class="mission-actions">
-        <button class="edit-btn" onclick="editMission(${originalIndex})" title="Редактировать">✏️</button>
-        <button class="delete-btn" onclick="deleteMission(${originalIndex})" title="Удалить">🗑️</button>
-      </div>
-    `;
-    container.appendChild(missionElement);
-  });
+    // Отображаем ВСЕ миссии, сортируем: активные сверху, выполненные снизу
+    const allMissions = [...userData.missions].sort((a, b) => {
+        if (a.completed && !b.completed) return 1;
+        if (!a.completed && b.completed) return -1;
+        return 0;
+    });
+
+    if (allMissions.length === 0) {
+        container.innerHTML = `<div class="empty-missions">
+            <div class="empty-icon">🗺️</div>
+            <p>Нет миссий</p>
+            <small>Создайте первую миссию, чтобы начать путь героя!</small>
+        </div>`;
+        return;
+    }
+
+    container.innerHTML = '';
+    allMissions.forEach((mission) => {
+        const originalIndex = userData.missions.findIndex(m => m.id === mission.id);
+        if (originalIndex === -1) return;
+
+        const config = MISSION_CONFIG[mission.scale] || MISSION_CONFIG.small;
+        const missionElement = document.createElement('div');
+        missionElement.className = `mission-item ${mission.completed ? 'completed' : ''}`;
+        missionElement.innerHTML = `
+            <input type="checkbox" ${mission.completed ? 'checked' : ''}
+                onchange="toggleMission(${originalIndex})">
+            <div class="mission-content">
+                <div class="mission-header">
+                    <div class="mission-title">${escapeHtml(mission.title)}</div>
+                    <div class="mission-scale" style="background-color: ${config.color}15; border-color: ${config.color}60; color: ${config.color}">
+                        ${config.icon} ${config.label}
+                    </div>
+                </div>
+                <div class="mission-meta">
+                    <span class="mission-xp">${config.xp} XP</span>
+                    
+                </div>
+            </div>
+            <div class="mission-actions">
+                <button class="edit-btn" onclick="editMission(${originalIndex})" title="Редактировать">✏️</button>
+                <button class="delete-btn" onclick="deleteMission(${originalIndex})" title="Удалить">🗑️</button>
+            </div>
+        `;
+        container.appendChild(missionElement);
+    });
 }
 
 // === УПРАВЛЕНИЕ МИССИЯМИ ===

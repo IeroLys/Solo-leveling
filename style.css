@@ -388,6 +388,37 @@ body {
   }
 }
 
+/* Стили для выполненных миссий */
+.mission-item.completed {
+    opacity: 0.85;
+    background: rgba(30, 60, 50, 0.3);
+    border-color: rgba(50, 200, 150, 0.45);
+}
+.mission-item.completed::before {
+    background: linear-gradient(180deg, #32c896, #64ff96);
+}
+.mission-item.completed .mission-title {
+    text-decoration: line-through;
+    color: rgba(224, 247, 255, 0.75);
+}
+.mission-completed-badge {
+    background: rgba(50, 200, 150, 0.25);
+    color: #4dff4d;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-left: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.mission-item.completed:hover {
+    transform: translateX(3px);
+    border-color: rgba(50, 200, 150, 0.6);
+    box-shadow: 0 4px 15px rgba(0, 30, 60, 0.3);
+}
+
 /* === АДАПТИВНОСТЬ === */
 @media (max-width: 480px) {
   .nav-tab {
