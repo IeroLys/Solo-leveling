@@ -12,6 +12,7 @@ let userData = {
     // Массив бустов: каждый буст привязан к задаче и стату
     boosts: [], // { id, taskId, statType, percentage, expiresAt, sourceText }
     history: [],
+    missions: [], // { id, title, scale: 'small' | 'medium' | 'large', completed: boolean, awardedXP?, historyId? }
     lastReset: new Date().toDateString()
 };
 
@@ -30,6 +31,13 @@ const DIFFICULTY_CONFIG = {
     3: { xp: 80, label: 'Средняя', color: '#ffd166', boost: 15 },
     4: { xp: 130, label: 'Выше сред.', color: '#ff9e66', boost: 20 },
     5: { xp: 220, label: 'Сложная', color: '#ff4d4d', boost: 25 }
+};
+
+// === НАСТРОЙКИ МИССИЙ ===
+const MISSION_CONFIG = {
+  small: { xp: 2000, label: 'Маленькая', color: '#4dff4d', icon: '🎯' },
+  medium: { xp: 4000, label: 'Средняя', color: '#ffd166', icon: '⚔️' },
+  large: { xp: 8000, label: 'Большая', color: '#ff4d4d', icon: '🔥' }
 };
 
 // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
@@ -177,6 +185,7 @@ function loadUserData() {
                 miscTodos,
                 boosts,
                 history: parsed.history || [],
+                missions: parsed.missions || [],
                 lastReset: parsed.lastReset || new Date().toDateString()
             };
             
@@ -214,41 +223,41 @@ function saveUserData() {
 }
 
 function addXP(amount, statTypes = []) {
-const oldMainLevel = getLevelFromTotalXP(userData.totalXP).level;
-const oldStatLevels = {};
-statTypes.forEach(statType => {
-oldStatLevels[statType] = getLevelFromTotalXP(userData.stats[statType].totalXP).level;
-});
+    const oldMainLevel = getLevelFromTotalXP(userData.totalXP).level;
+    const oldStatLevels = {};
+    statTypes.forEach(statType => {
+        oldStatLevels[statType] = getLevelFromTotalXP(userData.stats[statType].totalXP).level;
+    });
 
-userData.totalXP += amount;
-statTypes.forEach(statType => {
-if (userData.stats[statType]) {
-userData.stats[statType].totalXP += amount;
-}
-});
+    userData.totalXP += amount;
+    statTypes.forEach(statType => {
+        if (userData.stats[statType]) {
+            userData.stats[statType].totalXP += amount;
+        }
+    });
 
-saveUserData();
-renderUI();
+    saveUserData();
+    renderUI();
 
-// Проверка повышения уровня
-const newMainLevel = getLevelFromTotalXP(userData.totalXP).level;
-if (newMainLevel > oldMainLevel) {
-showLevelUpNotification(newMainLevel);
-}
+    // Проверка повышения уровня
+    const newMainLevel = getLevelFromTotalXP(userData.totalXP).level;
+    if (newMainLevel > oldMainLevel) {
+        showLevelUpNotification(newMainLevel);
+    }
 
 // Проверка повышения уровня статов
-statTypes.forEach(statType => {
-const newStatLevel = getLevelFromTotalXP(userData.stats[statType].totalXP).level;
-const oldLevel = oldStatLevels[statType];
-if (newStatLevel > oldLevel) {
-const statNames = {
-strength: 'Strength',
-career: 'Career',
-willpower: 'Willpower'
-};
-showSkillLevelUpNotification(statNames[statType], statType, newStatLevel);
-}
-});
+    statTypes.forEach(statType => {
+    const newStatLevel = getLevelFromTotalXP(userData.stats[statType].totalXP).level;
+    const oldLevel = oldStatLevels[statType];
+    if (newStatLevel > oldLevel) {
+        const statNames = {
+        strength: 'Strength',
+        career: 'Career',
+        willpower: 'Willpower'
+        };
+        showSkillLevelUpNotification(statNames[statType], statType, newStatLevel);
+    }
+    });
 }
 
 function removeXP(amount, statTypes = []) {
@@ -476,9 +485,9 @@ function renderUI() {
     const rankElement = document.getElementById('rank');
 
    // === ПРОГРЕСС ДО СЛЕДУЮЩЕГО РАНГА ===
-const rankProgress = getRankProgressInfo(main.level);
-const rankProgressLabel = document.getElementById('rank-progress-label');
-const rankProgressFill = document.getElementById('rank-progress-fill');
+    const rankProgress = getRankProgressInfo(main.level);
+    const rankProgressLabel = document.getElementById('rank-progress-label');
+    const rankProgressFill = document.getElementById('rank-progress-fill');
 
 if (rankProgressLabel && rankProgressFill) {
   if (rankProgress.isMaxRank) {
@@ -572,6 +581,7 @@ if (rankProgressLabel && rankProgressFill) {
     
     renderTodoList();
     renderMiscList();
+    renderMissionList();
 
 }
 
@@ -708,6 +718,238 @@ function renderMiscList() {
         `;
         container.appendChild(miscElement);
     });
+}
+
+function renderMissionList() {
+  const container = document.getElementById('missions-container');
+  if (!container) return;
+  
+  // Фильтруем только невыполненные миссии (выполненные остаются в истории)
+  const activeMissions = userData.missions.filter(m => !m.completed);
+  
+  if (activeMissions.length === 0) {
+    container.innerHTML = `
+      <div class="empty-missions">
+        <div class="empty-icon">🗺️</div>
+        <p>Нет активных миссий</p>
+        <small>Создайте первую миссию, чтобы начать путь героя!</small>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = '';
+  
+  activeMissions.forEach((mission, idx) => {
+    // Найти оригинальный индекс в массиве (для корректной работы функций)
+    const originalIndex = userData.missions.findIndex(m => m.id === mission.id);
+    const config = MISSION_CONFIG[mission.scale] || MISSION_CONFIG.small;
+    
+    const missionElement = document.createElement('div');
+    missionElement.className = `mission-item`;
+    missionElement.innerHTML = `
+      <input type="checkbox" onchange="toggleMission(${originalIndex})">
+      <div class="mission-content">
+        <div class="mission-header">
+          <div class="mission-title">${escapeHtml(mission.title)}</div>
+          <div class="mission-scale" style="background-color: ${config.color}15; border-color: ${config.color}60; color: ${config.color}">
+            ${config.icon} ${config.label}
+          </div>
+        </div>
+        <div class="mission-meta">
+          <span class="mission-xp">${config.xp} XP</span>
+        </div>
+      </div>
+      <div class="mission-actions">
+        <button class="edit-btn" onclick="editMission(${originalIndex})" title="Редактировать">✏️</button>
+        <button class="delete-btn" onclick="deleteMission(${originalIndex})" title="Удалить">🗑️</button>
+      </div>
+    `;
+    container.appendChild(missionElement);
+  });
+}
+
+// === УПРАВЛЕНИЕ МИССИЯМИ ===
+let currentMissionEditIndex = null;
+
+function toggleMission(index) {
+  const mission = userData.missions[index];
+  if (!mission) return;
+  
+  if (mission.completed) {
+    // Отмена выполнения
+    if (mission.awardedXP) {
+      userData.totalXP = Math.max(0, userData.totalXP - mission.awardedXP);
+    }
+    if (mission.historyId) {
+      userData.history = userData.history.filter(entry => entry.id !== mission.historyId);
+    }
+    mission.completed = false;
+    delete mission.awardedXP;
+    delete mission.historyId;
+  } else {
+    // Выполнение миссии
+    const config = MISSION_CONFIG[mission.scale] || MISSION_CONFIG.small;
+    const xp = config.xp;
+    userData.totalXP += xp;
+    
+    // Запись в историю
+    const historyEntry = {
+      id: Date.now(),
+      text: mission.title,
+      baseXP: xp,
+      boostXP: 0,
+      totalXP: xp,
+      statTypes: [],
+      appliedBoosts: [],
+      completedAt: new Date().toISOString(),
+      type: 'mission'
+    };
+    
+    userData.history.push(historyEntry);
+    mission.historyId = historyEntry.id;
+    mission.awardedXP = xp;
+    mission.completed = true;
+    
+    // Показать уведомление
+    showNotification(
+      'success',
+      '🏆 Миссия выполнена!',
+      `${config.icon} ${mission.title}`,
+      { statName: 'MISSION COMPLETE', statLevel: `+${xp} XP` }
+    );
+  }
+  
+  saveUserData();
+  renderUI();
+}
+
+function deleteMission(index) {
+  if (!confirm('Удалить миссию? Это действие нельзя отменить.')) return;
+  const mission = userData.missions[index];
+  
+  // Если миссия выполнена - отменяем выполнение перед удалением
+  if (mission?.completed && mission.awardedXP) {
+    userData.totalXP = Math.max(0, userData.totalXP - mission.awardedXP);
+    if (mission.historyId) {
+      userData.history = userData.history.filter(entry => entry.id !== mission.historyId);
+    }
+  }
+  
+  userData.missions.splice(index, 1);
+  saveUserData();
+  renderUI();
+}
+
+function openAddMissionModal() {
+  currentMissionEditIndex = null;
+  document.getElementById('mission-modal-title').textContent = 'Добавить миссию';
+  document.getElementById('mission-title').value = '';
+  document.querySelector('input[name="mission-scale"][value="small"]').checked = true;
+  updateMissionPreview();
+  document.getElementById('mission-modal').classList.add('active');
+}
+
+function editMission(index) {
+  const mission = userData.missions[index];
+  if (!mission) return;
+  
+  currentMissionEditIndex = index;
+  document.getElementById('mission-modal-title').textContent = 'Редактировать миссию';
+  document.getElementById('mission-title').value = mission.title;
+  document.querySelector(`input[name="mission-scale"][value="${mission.scale}"]`).checked = true;
+  updateMissionPreview();
+  document.getElementById('mission-modal').classList.add('active');
+}
+
+function saveMissionEdit() {
+  const titleInput = document.getElementById('mission-title');
+  const title = titleInput?.value.trim() || '';
+  const scaleInput = document.querySelector('input[name="mission-scale"]:checked');
+  const scale = scaleInput?.value || null;
+
+  // Защита от отсутствия массива миссий
+    if (!Array.isArray(userData.missions)) {
+    console.warn('[Missions] Initializing empty missions array');
+    userData.missions = [];
+    }
+  
+  // Отладка в консоль (удалите после проверки)
+  console.log('[Missions] Save attempt:', { title, scale, editIndex: currentMissionEditIndex });
+  
+  if (!title) {
+    alert('⚠️ Введите название миссии');
+    titleInput?.focus();
+    return;
+  }
+  
+  if (!scale || !MISSION_CONFIG[scale]) {
+    alert('⚠️ Выберите масштаб миссии');
+    return;
+  }
+  
+  const config = MISSION_CONFIG[scale];
+  
+  try {
+    if (currentMissionEditIndex === null) {
+      // Создание новой миссии
+      userData.missions.push({
+        id: generateId('mission'),
+        title,
+        scale,
+        completed: false
+      });
+      console.log('[Missions] New mission created:', title);
+    } else {
+      // Редактирование существующей
+      const oldMission = userData.missions[currentMissionEditIndex];
+      if (!oldMission) throw new Error('Mission not found for editing');
+      
+      // Сброс выполнения при изменении параметров
+      if (oldMission.completed) {
+        if (oldMission.awardedXP) {
+          userData.totalXP = Math.max(0, userData.totalXP - oldMission.awardedXP);
+        }
+        if (oldMission.historyId) {
+          userData.history = userData.history.filter(e => e.id !== oldMission.historyId);
+        }
+      }
+      
+      userData.missions[currentMissionEditIndex] = {
+        ...oldMission,
+        title,
+        scale,
+        completed: oldMission.completed ? false : oldMission.completed // сохраняем статус только если не была выполнена
+      };
+    }
+    
+    closeMissionModal();
+    saveUserData();
+    renderUI();
+    
+  } catch (error) {
+    console.error('[Missions] Error saving mission:', error);
+    alert(`❌ Ошибка сохранения: ${error.message}\nПроверьте консоль (F12) для деталей`);
+  }
+}
+
+function closeMissionModal() {
+  document.getElementById('mission-modal').classList.remove('active');
+  currentMissionEditIndex = null;
+}
+
+function updateMissionPreview() {
+  const scale = document.querySelector('input[name="mission-scale"]:checked')?.value || 'small';
+  const config = MISSION_CONFIG[scale];
+  const preview = document.getElementById('mission-preview');
+  if (preview) {
+    preview.innerHTML = `
+      <span class="mission-preview-icon">${config.icon}</span>
+      <span>${config.label} миссия</span>
+      <span class="mission-xp-badge">+${config.xp} XP</span>
+    `;
+    preview.style.borderColor = `${config.color}80`;
+  }
 }
 
 // === РЕДАКТИРОВАНИЕ ЗАДАЧ ===
@@ -1080,6 +1322,10 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
+function generateId(prefix = 'item') {
+  return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
 // === УПРАВЛЕНИЕ СЛОЖНОСТЬЮ ===
 function updateDifficultyUI(level) {
     const markers = document.querySelectorAll('#difficulty-ruler .ruler-marker');
@@ -1324,7 +1570,7 @@ function handleFileSelect(event) {
 }
 
 function resetAllData() {
-    if (!confirm('⚠️ ВНИМАНИЕ!\n\nВсе данные будут УДАЛЕНЫ безвозвратно.\nЭто включает уровни, статы, квесты и задачи жизни.\n\nВы уверены?')) {
+    if (!confirm('⚠️ ВНИМАНИЕ!\n\nВсе данные будут УДАЛЕНЫ безвозвратно.\nЭто включает уровни, статы, квесты, миски, миссии.\n\nВы уверены?')) {
         return;
     }
     userData = {
@@ -1337,6 +1583,7 @@ function resetAllData() {
         todos: [],
         miscTodos: [],
         boosts: [],
+        missions: [],
         history: [],
         lastReset: new Date().toDateString()
     };
@@ -1415,6 +1662,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('import-file').addEventListener('change', handleFileSelect);
     document.getElementById('reset-btn').addEventListener('click', resetAllData);
     
+    // Mission modal handlers
+    document.getElementById('add-mission-btn')?.addEventListener('click', openAddMissionModal);
+    document.getElementById('save-mission-btn')?.addEventListener('click', saveMissionEdit);
+    document.getElementById('cancel-mission-btn')?.addEventListener('click', closeMissionModal);
+    document.getElementById('close-mission-modal')?.addEventListener('click', closeMissionModal);
+    document.getElementById('mission-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'mission-modal') closeMissionModal();
+    });
+
+    // Обновление превью при выборе масштаба
+    document.querySelectorAll('input[name="mission-scale"]').forEach(radio => {
+    radio.addEventListener('change', updateMissionPreview);
+    });
+
     // Difficulty selectors
     document.getElementById('difficulty-ruler').addEventListener('click', handleDifficultyClick);
     

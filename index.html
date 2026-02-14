@@ -177,11 +177,20 @@
         </div>
     </div>
     <div id="tab-missions" class="tab-content">
-        <div class="empty-tab">
-        <div class="empty-icon">🎯</div>
-        <h2>Missions Hub</h2>
-        <p>Цели жизни покрупнее и глобальнее будут тут</p>
+    <div class="missions-section">
+        <div class="section-header">
+        <h2 class="section-title">🗺️ Missions</h2>
+        <div class="section-subtitle">Выполняйте эпические миссии для быстрого роста уровня</div>
         </div>
+        
+        <div id="missions-container" class="missions-list">
+        <!-- Список миссий будет здесь -->
+        </div>
+        
+        <button id="add-mission-btn" class="add-mission-btn">
+        <span class="plus-icon">+</span> Создать миссию
+        </button>
+    </div>
     </div>
     <div id="tab-gates" class="tab-content">
         <div class="empty-tab">
@@ -350,6 +359,67 @@
             <div class="modal-footer history-footer">
                 <button class="btn btn-warning" id="clear-history-btn">🗑️ Очистить историю</button>
                 <button class="btn btn-secondary" id="close-history-modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для миссий -->
+    <div id="mission-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h3 id="mission-modal-title">Добавить миссию</h3>
+            <button id="close-mission-modal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+            <input type="text" id="mission-title" class="modal-input" placeholder="Название миссии (например: Пробежка 5 км)">
+            
+            <div class="modal-section">
+                <label class="modal-section-title">Выберите масштаб миссии:</label>
+                <div class="mission-scale-options">
+                <label class="scale-option small">
+                    <input type="radio" name="mission-scale" value="small">
+                    <div class="scale-content">
+                    <div class="scale-icon">🎯</div>
+                    <div>
+                        <div class="scale-name">Маленькая</div>
+                        <div class="scale-desc">2 000 XP</div>
+                    </div>
+                    </div>
+                </label>
+                
+                <label class="scale-option medium">
+                    <input type="radio" name="mission-scale" value="medium">
+                    <div class="scale-content">
+                    <div class="scale-icon">⚔️</div>
+                    <div>
+                        <div class="scale-name">Средняя</div>
+                        <div class="scale-desc">4 000 XP</div>
+                    </div>
+                    </div>
+                </label>
+                
+                <label class="scale-option large">
+                    <input type="radio" name="mission-scale" value="large">
+                    <div class="scale-content">
+                    <div class="scale-icon">🔥</div>
+                    <div>
+                        <div class="scale-name">Большая</div>
+                        <div class="scale-desc">8 000 XP</div>
+                    </div>
+                    </div>
+                </label>
+                </div>
+            </div>
+            
+            <div class="mission-preview" id="mission-preview">
+                <span class="mission-preview-icon">🎯</span>
+                <span>Маленькая миссия</span>
+                <span class="mission-xp-badge">+2000 XP</span>
+            </div>
+            </div>
+            <div class="modal-footer">
+            <button id="cancel-mission-btn" class="btn btn-secondary">Отмена</button>
+            <button id="save-mission-btn" class="btn btn-primary">Создать миссию</button>
             </div>
         </div>
     </div>

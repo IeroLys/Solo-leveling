@@ -131,6 +131,263 @@ body {
   text-shadow: 0 0 10px rgba(0, 200, 255, 0.3);
 }
 
+/* === СЕКЦИЯ МИССИЙ === */
+.missions-section {
+  padding: 16px;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.section-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-top: 4px;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.missions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.empty-missions {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.6);
+}
+.empty-missions .empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+  opacity: 0.7;
+  display: block;
+}
+.mission-item {
+  background: rgba(20, 30, 45, 0.7);
+  border: 1px solid rgba(100, 150, 255, 0.3);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.mission-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(to bottom, #4d9fff, #00ccff);
+  transition: width 0.3s ease;
+}
+.mission-item:hover::before {
+  width: 4px;
+}
+.mission-item:hover {
+  transform: translateX(3px);
+  border-color: rgba(0, 180, 255, 0.5);
+  box-shadow: 0 4px 15px rgba(0, 30, 60, 0.4);
+}
+.mission-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #00ccff;
+  flex-shrink: 0;
+}
+.mission-content {
+  flex: 1;
+  min-width: 0;
+}
+.mission-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.mission-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #e0f7ff;
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+}
+.mission-scale {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.mission-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+}
+.mission-xp {
+  background: rgba(0, 200, 255, 0.15);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.mission-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 60px;
+}
+.add-mission-btn {
+  background: linear-gradient(135deg, rgba(30, 40, 60, 0.8) 0%, rgba(20, 30, 45, 0.9) 100%);
+  border: 1px dashed rgba(0, 180, 255, 0.5);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: #00ccff;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.add-mission-btn:hover {
+  background: linear-gradient(135deg, rgba(25, 35, 55, 0.9) 0%, rgba(15, 25, 40, 0.95) 100%);
+  border-color: #00aaff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 30, 60, 0.5);
+}
+.add-mission-btn .plus-icon {
+  font-size: 1.8rem;
+  transition: transform 0.3s ease;
+}
+.add-mission-btn:hover .plus-icon {
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* === МОДАЛЬНОЕ ОКНО МИССИЙ === */
+.mission-scale-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+.scale-option {
+  background: rgba(25, 35, 55, 0.7);
+  border: 2px solid rgba(100, 150, 255, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.scale-option:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 180, 255, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 30, 60, 0.4);
+}
+.scale-option input[type="radio"] {
+  display: none;
+}
+.scale-option.small:hover { border-color: #4dff4d80; }
+.scale-option.medium:hover { border-color: #ffd16680; }
+.scale-option.large:hover { border-color: #ff4d4d80; }
+.scale-option input[type="radio"]:checked + .scale-content {
+  background: rgba(0, 30, 60, 0.8);
+  border-radius: 8px;
+  padding: 8px;
+  width: 100%;
+}
+.scale-option.small input[type="radio"]:checked + .scale-content { border: 2px solid #4dff4d; }
+.scale-option.medium input[type="radio"]:checked + .scale-content { border: 2px solid #ffd166; }
+.scale-option.large input[type="radio"]:checked + .scale-content { border: 2px solid #ff4d4d; }
+.scale-icon {
+  font-size: 1.8rem;
+  margin-bottom: 6px;
+}
+.scale-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+.scale-desc {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  font-weight: 500;
+}
+.mission-preview {
+  background: rgba(0, 30, 60, 0.7);
+  border: 1px solid rgba(0, 180, 255, 0.4);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  font-weight: 600;
+}
+.mission-preview-icon {
+  font-size: 1.4rem;
+  margin-right: 8px;
+}
+.mission-xp-badge {
+  background: linear-gradient(135deg, #00aaff 0%, #00ccff 100%);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  min-width: 75px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 170, 255, 0.4);
+}
+
+/* Адаптивность для миссий */
+@media (max-width: 480px) {
+  .mission-scale-options {
+    grid-template-columns: 1fr;
+  }
+  .mission-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .mission-scale {
+    align-self: flex-start;
+  }
+  .section-subtitle {
+    max-width: 100%;
+    font-size: 0.85rem;
+  }
+  .add-mission-btn {
+    padding: 14px;
+    font-size: 1rem;
+  }
+  .mission-preview {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
 /* === АДАПТИВНОСТЬ === */
 @media (max-width: 480px) {
   .nav-tab {
