@@ -361,10 +361,38 @@ body {
 }
 
 /* Адаптивность для миссий */
+/* Адаптивность для миссий — ГАРАНТИРОВАННО 3 В СТРОКУ */
 @media (max-width: 480px) {
   .mission-scale-options {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 3px !important;
+    margin: 8px 0 !important;
   }
+  
+  .scale-option {
+    padding: 5px 2px !important;
+    min-width: 0 !important;
+  }
+  
+  .scale-icon {
+    font-size: 1.15rem !important;
+    margin-bottom: 2px !important;
+  }
+  
+  .scale-name {
+    font-size: 0.75rem !important;
+    margin-bottom: 1px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  .scale-desc {
+    font-size: 0.65rem !important;
+    line-height: 1.1 !important;
+  }
+  
+  /* Сохраняем остальные стили без изменений */
   .mission-header {
     flex-direction: column;
     align-items: flex-start;
